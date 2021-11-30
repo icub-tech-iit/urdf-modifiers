@@ -1,4 +1,6 @@
 # urdf-modifiers
+<img src="https://user-images.githubusercontent.com/56030908/144103210-44302013-2d99-4b5b-99c1-cd36fa906dde.png" width="900">
+
 
 This library allows to modify a urdf kinematic chain links and joint and creating a new  urdf model out of it. 
 The possible modifications are related to : 
