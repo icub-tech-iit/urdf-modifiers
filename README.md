@@ -11,6 +11,12 @@ The possible modifications are related to :
 
 An interface for reading the modifications from a configuration file is provided together with the library (TODO) 
 
+The library is aimed at modifying basic shapes, i.e. : 
+- Sphere; 
+- Cylinder; 
+- Box.
+
+If you want to convert your model into basic shapes, you can use [`idyntree-model-simplify-shapes`](https://github.com/robotology/idyntree#idyntree-model-simplify-shapes)
 ## :hammer: Dependencies
 
 - [`python3`](https://wiki.python.org/moin/BeginnersGuide)
