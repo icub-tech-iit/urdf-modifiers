@@ -63,24 +63,19 @@ from urdfModifiers.utils import *
 
 urdf_path ="./models/stickBot/model.urdf"
 output_file = "./models/stickBotModified.urdf"
-
-# TODO make a unique utils function out of it 
 dummy_file = 'no_gazebo_plugins.urdf'
-main_urdf, gazebo_plugin_text = utils.separate_gazebo_plugins(urdf_path)
-utils.create_dummy_file(dummy_file, main_urdf)
-robot = URDF.load(dummy_file)
-utils.erase_dummy_file(dummy_file)
+robot, gazebo_plugin_text = utils.load_robot_and_gazebo_plugins(urdf_path,dummy_file)
 
 modifications= {}
-modifications["dimension"] = [2.0, False] # Relative modification
-modifications["density"] = [2.0, False] # Relative modification
+modifications[utils.geometry.Modification.DIMENSION] = [2.0, utils.geometry.Modification.MULTIPLIER] # Relative modification
+modifications[utils.geometry.Modification.DENSITY] = [2.0, utils.geometry.Modification.MULTIPLIER] # Relative modification
 
 modifiers = [LinkModifier.from_name('r_upper_arm',robot, 0.022),
                 JointModifier.from_name('r_elbow',robot, 0.0344)]
                 
 for item in modifiers:
     item.modify(modifications)
-utils.write_urdf_to_file(robot, output_file, gazebo_plugin_text)      
+utils.write_urdf_to_file(robot, output_file, gazebo_plugin_text)  
 ```
 
 ### From configuration file 
@@ -94,13 +89,9 @@ import configparser
 
 urdf_path ="./models/stickBot/model.urdf"
 output_file = "./models/stickBotModified.urdf"
-
-# TODO make a unique utils function out of it 
 dummy_file = 'no_gazebo_plugins.urdf'
-main_urdf, gazebo_plugin_text = utils.separate_gazebo_plugins(urdf_path)
-utils.create_dummy_file(dummy_file, main_urdf)
-robot = URDF.load(dummy_file)
-utils.erase_dummy_file(dummy_file)
+
+robot, gazebo_plugin_text = utils.load_robot_and_gazebo_plugins(urdf_path,dummy_file)
 
 config_file_path = "./config/conf.ini"
 config = configparser.ConfigParser()

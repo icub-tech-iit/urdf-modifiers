@@ -1,3 +1,4 @@
+from typing import Tuple
 from urdfpy import URDF
 from urdfModifiers.geometry import *
 import os
@@ -71,8 +72,7 @@ def erase_dummy_file(dummy_filename):
     """Erases the dummy file"""
     os.remove(dummy_filename)
 
-# TODO is returning a string 
-def load_robot_and_gazebo_plugins(urdf_path,dummy_fileName): 
+def load_robot_and_gazebo_plugins(urdf_path:str, dummy_fileName:str)-> Tuple[URDF,str]:
     main_urdf, gazebo_plugin_text = separate_gazebo_plugins(urdf_path)
     create_dummy_file(dummy_fileName, main_urdf)
     robot = URDF.load(dummy_fileName)
