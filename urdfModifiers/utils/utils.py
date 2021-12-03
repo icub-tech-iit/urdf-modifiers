@@ -1,9 +1,8 @@
 from urdfpy import URDF
 from urdfModifiers.geometry import *
-from pathlib import Path
-import argparse
-import configparser
 import os
+
+from urdfModifiers.geometry.geometry import Modification
 
 def write_urdf_to_file(urdf, filename, gazebo_plugins):
     """Saves the URDF to a valid .urdf file, also adding the gazebo_plugins"""
@@ -42,36 +41,40 @@ def create_dummy_file(dummy_filename, text):
 def parse_modifications(config_section):
     """Returns the modifications from a section of the ini file"""
     modifications = {}
-    dimension_scale = config_section.get('dimension_scale', None)
+    dimension_scale = config_section.get(geometry.Modification.DIMENSION+geometry.Modification.SCALE, None)
     if dimension_scale is not None:
-        modifications["dimension"] = [float(dimension_scale), False]
-    density_scale = config_section.get('density_scale', None)
+        modifications[geometry.Modification.DIMENSION] = [float(dimension_scale), geometry.Modification.MULTIPLIER]
+    density_scale = config_section.get(geometry.Modification.DENSITY+geometry.Modification.SCALE, None)
     if density_scale is not None:
-        modifications["density"] = [float(density_scale), False]
-    radius_scale = config_section.get('radius_scale', None)
+        modifications[geometry.Modification.DENSITY] = [float(density_scale), geometry.Modification.MULTIPLIER]
+    radius_scale = config_section.get(geometry.Modification.DENSITY+Modification.SCALE, None)
     if radius_scale is not None:
-        modifications["radius"] = [float(radius_scale), False]
-    mass_scale = config_section.get('mass_scale', None)
+        modifications[geometry.Modification.RADIUS] = [float(radius_scale), geometry.Modification.MULTIPLIER]
+    mass_scale = config_section.get(geometry.Modification.MASS+geometry.Modification.SCALE, None)
     if mass_scale is not None:
-        modifications["mass"] = [float(mass_scale), False]
-    dimension = config_section.get('dimension', None)
+        modifications[geometry.Modification.MASS] = [float(mass_scale), geometry.Modification.MULTIPLIER]
+    dimension = config_section.get(geometry.Modification.DIMENSION, None)
     if dimension is not None:
-        modifications["dimension"] = [float(dimension), True]
-    density = config_section.get('density', None)
+        modifications[geometry.Modification.DIMENSION] = [float(dimension), geometry.Modification.ABSOLUTE]
+    density = config_section.get(geometry.Modification.DENSITY, None)
     if density is not None:
-        modifications["density"] = [float(density), True]
-    radius = config_section.get('radius', None)
+        modifications[geometry.Modification.DENSITY] = [float(density), geometry.Modification.ABSOLUTE]
+    radius = config_section.get(geometry.Modification.RADIUS, None)
     if radius is not None:
-        modifications["radius"] = [float(radius), True]
-    mass = config_section.get('mass', None)
+        modifications[geometry.Modification.RADIUS] = [float(radius), geometry.Modification.ABSOLUTE]
+    mass = config_section.get(geometry.Modification.MASS, None)
     if mass is not None:
-        modifications["mass"] = [float(mass), True]
+        modifications[geometry.Modification.MASS] = [float(mass), geometry.Modification.ABSOLUTE]
     return modifications
 
 def erase_dummy_file(dummy_filename):
     """Erases the dummy file"""
     os.remove(dummy_filename)
 
-def install_urdf():
-    """Uses Make to install the URDF in the build folder to the Gazebo path"""
-    os.system("cd ../build && make install -j4")
+# TODO is returning a string 
+def load_robot_and_gazebo_plugins(urdf_path,dummy_fileName): 
+    main_urdf, gazebo_plugin_text = separate_gazebo_plugins(urdf_path)
+    create_dummy_file(dummy_fileName, main_urdf)
+    robot = URDF.load(dummy_fileName)
+    erase_dummy_file(dummy_fileName)
+    return robot, gazebo_plugin_text

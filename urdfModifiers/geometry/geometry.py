@@ -36,3 +36,12 @@ class RobotElement(Enum):
     """Types of elements in the urdf"""
     LINK = 1
     JOINT = 2
+
+class Modification():
+    DENSITY = "density"
+    DIMENSION = "dimension"
+    RADIUS = "radius"
+    MASS = "mass"
+    ABSOLUTE = True
+    MULTIPLIER = False 
+    SCALE= "_scale"

@@ -54,10 +54,12 @@ source your_virtual_env/bin/activate
 
 ## :rocket: Usage
 
+### From script
+
 ```python
 from urdfModifiers.core.linkModifier import LinkModifier
 from urdfModifiers.core.jointModifier import JointModifier
-from urdfModifiers import utils
+from urdfModifiers.utils import *
 
 urdf_path ="./models/stickBot/model.urdf"
 output_file = "./models/stickBotModified.urdf"
@@ -77,7 +79,42 @@ modifiers = [LinkModifier.from_name('r_upper_arm',robot, 0.022),
                 JointModifier.from_name('r_elbow',robot, 0.0344)]
                 
 for item in modifiers:
-    item.modify(modificationsArms)
-utils.write_urdf_to_file(robot, output_file, gazebo_plugin_text)    
+    item.modify(modifications)
+utils.write_urdf_to_file(robot, output_file, gazebo_plugin_text)      
+```
+
+### From configuration file 
+
+```python
+
+from urdfModifiers.core.linkModifier import LinkModifier
+from urdfModifiers.core.jointModifier import JointModifier
+from urdfModifiers.utils import *
+import configparser
+
+urdf_path ="./models/stickBot/model.urdf"
+output_file = "./models/stickBotModified.urdf"
+
+# TODO make a unique utils function out of it 
+dummy_file = 'no_gazebo_plugins.urdf'
+main_urdf, gazebo_plugin_text = utils.separate_gazebo_plugins(urdf_path)
+utils.create_dummy_file(dummy_file, main_urdf)
+robot = URDF.load(dummy_file)
+utils.erase_dummy_file(dummy_file)
+
+config_file_path = "./config/conf.ini"
+config = configparser.ConfigParser()
+config.read(config_file_path)
+
+for config_section in config.sections():
+    modifications = utils.parse_modifications(config[config_section])
+    selector = config_section
+    if(selector == 'r_upper_arm'):
+        modifiers = [LinkModifier.from_name('r_upper_arm',robot, 0.022),
+        JointModifier.from_name('r_elbow',robot, 0.0344)]
+                        
+for item in modifiers:
+    item.modify(modifications)
+utils.write_urdf_to_file(robot, output_file, gazebo_plugin_text)
 
 ```
