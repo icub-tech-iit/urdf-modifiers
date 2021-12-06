@@ -9,7 +9,7 @@ The possible modifications are related to :
 - **Dimension** (relative and absolute);
 - **Radius** (relative and absolute). 
 
-An interface for reading the modifications from a configuration file is provided together with the library (TODO) 
+An interface for reading the modifications from a configuration file is provided together with the library.
 
 The library is aimed at modifying basic shapes, i.e. : 
 - Sphere; 
