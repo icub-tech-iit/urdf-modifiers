@@ -67,8 +67,8 @@ dummy_file = 'no_gazebo_plugins.urdf'
 robot, gazebo_plugin_text = utils.load_robot_and_gazebo_plugins(urdf_path,dummy_file)
 
 modifications= {}
-modifications[utils.geometry.Modification.DIMENSION] = [2.0, utils.geometry.Modification.MULTIPLIER] # Relative modification
-modifications[utils.geometry.Modification.DENSITY] = [2.0, utils.geometry.Modification.MULTIPLIER] # Relative modification
+modifications[utils.geometry.Modification.DIMENSION] = [0.2, utils.geometry.Modification.ABSOLUTE] # Makes the link 0.2m long
+modifications[utils.geometry.Modification.DENSITY] = [2.0, utils.geometry.Modification.MULTIPLIER] # Doubles the link's density
 
 modifiers = [LinkModifier.from_name('r_upper_arm',robot, 0.022),
                 JointModifier.from_name('r_elbow',robot, 0.0344)]
