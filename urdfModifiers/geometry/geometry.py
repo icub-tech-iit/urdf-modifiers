@@ -1,5 +1,7 @@
 from enum import Enum, EnumMeta
 
+# TODO clean up: add docstring for limbMeta
+# TODO clean up: use enum auto 
 class LimbMeta(EnumMeta):
     def __contains__(cls, item):
         try:
@@ -38,6 +40,7 @@ class RobotElement(Enum):
     JOINT = 2
 
 class Modification():
+    """Available modifications type"""
     DENSITY = "density"
     DIMENSION = "dimension"
     RADIUS = "radius"
