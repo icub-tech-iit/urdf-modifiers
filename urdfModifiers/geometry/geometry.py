@@ -1,8 +1,7 @@
-from enum import Enum, EnumMeta
+from enum import Enum, EnumMeta, auto
 
-# TODO clean up: add docstring for limbMeta
-# TODO clean up: use enum auto 
-class LimbMeta(EnumMeta):
+class ContainsBasedOnKeyMeta(EnumMeta):
+    """Metaclass for enums that modifies the __contains__ method to check for keys instead of values."""
     def __contains__(cls, item):
         try:
             cls[item]
@@ -12,32 +11,32 @@ class LimbMeta(EnumMeta):
 
 class Geometry(Enum):
     """The different types of geometries that constitute the URDF"""
-    BOX = 1
-    CYLINDER = 2
-    SPHERE = 3
+    BOX = auto()
+    CYLINDER = auto()
+    SPHERE = auto()
 
 class Side(Enum):
     """The possible sides of a box geometry"""
-    WIDTH = 1
-    HEIGHT = 2
-    DEPTH = 3
+    WIDTH = auto()
+    HEIGHT = auto()
+    DEPTH = auto()
 
-class Limb(Enum, metaclass=LimbMeta):
+class Limb(Enum, metaclass=ContainsBasedOnKeyMeta):
     """The possible limbs of the robot"""
-    NONE = 0
-    RIGHT_ARM = 1
-    LEFT_ARM = 2
-    RIGHT_LEG = 3
-    LEFT_LEG = 4
-    ARMS = 5
-    LEGS = 6
-    TORSO = 7
-    ALL = 8
+    NONE = auto()
+    RIGHT_ARM = auto()
+    LEFT_ARM = auto()
+    RIGHT_LEG = auto()
+    LEFT_LEG = auto()
+    ARMS = auto()
+    LEGS = auto()
+    TORSO = auto()
+    ALL = auto()
 
 class RobotElement(Enum):
     """Types of elements in the urdf"""
-    LINK = 1
-    JOINT = 2
+    LINK = auto()
+    JOINT = auto()
 
 class Modification():
     """Available modifications type"""
