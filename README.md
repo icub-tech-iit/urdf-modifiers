@@ -69,7 +69,7 @@ robot, gazebo_plugin_text = utils.load_robot_and_gazebo_plugins(urdf_path,dummy_
 
 modifications = Modification()
 modifications.add_dimension(0.2, absolute=True) # Makes the link 0.2m long
-modificationsmodificationsTorso.add_density(2.0, absolute=False) # Doubles the link's density
+modifications.add_density(2.0, absolute=False) # Doubles the link's density
 
 
 modifiers = [LinkModifier.from_name('r_upper_arm',robot, 0.022),
