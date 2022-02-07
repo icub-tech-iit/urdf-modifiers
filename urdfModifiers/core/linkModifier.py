@@ -34,28 +34,28 @@ class LinkModifier(modifier.Modifier):
         original_radius = self.get_radius()
         original_length = self.get_significant_length()
         original_mass = self.get_mass()
-        if "radius" in modifications:
-            if modifications["radius"][1]:
-                self.set_radius(modifications["radius"][0])
+        if modifications.radius:
+            if modifications.radius.absolute:
+                self.set_radius(modifications.radius.value)
             else:
                 if original_radius is not None:
-                    self.set_radius(original_radius * modifications["radius"][0])
-        if "dimension" in modifications:
-            if modifications["dimension"][1]:
-                self.set_length(modifications["dimension"][0])
+                    self.set_radius(original_radius * modifications.radius.value)
+        if modifications.dimension:
+            if modifications.dimension.absolute:
+                self.set_length(modifications.dimension.value)
             else:
                 if original_length is not None:
-                    self.set_length(original_length * modifications["dimension"][0])
-        if "density" in modifications:
-            if modifications["density"][1]:
-                self.set_density(modifications["density"][0])
+                    self.set_length(original_length * modifications.dimension.value)
+        if modifications.density:
+            if modifications.density.absolute:
+                self.set_density(modifications.density.value)
             else:
-                self.set_density(original_density * modifications["density"][0])
-        if "mass" in modifications:
-            if modifications["mass"][1]:
-                self.set_mass(modifications["mass"][0])
+                self.set_density(original_density * modifications.density.value)
+        if modifications.mass:
+            if modifications.mass.absolute:
+                self.set_mass(modifications.mass.value)
             else:
-                self.set_mass(original_mass * modifications["mass"][0])
+                self.set_mass(original_mass * modifications.mass.value)
         self.update_inertia()
         self.modify_origin()
 
