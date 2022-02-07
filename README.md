@@ -59,6 +59,7 @@ source your_virtual_env/bin/activate
 ```python
 from urdfModifiers.core.linkModifier import LinkModifier
 from urdfModifiers.core.jointModifier import JointModifier
+from urdfModifiers.core.modification import Modification
 from urdfModifiers.utils import *
 
 urdf_path ="./models/stickBot/model.urdf"
@@ -66,9 +67,10 @@ output_file = "./models/stickBotModified.urdf"
 dummy_file = 'no_gazebo_plugins.urdf'
 robot, gazebo_plugin_text = utils.load_robot_and_gazebo_plugins(urdf_path,dummy_file)
 
-modifications= {}
-modifications[utils.geometry.Modification.DIMENSION] = [0.2, utils.geometry.Modification.ABSOLUTE] # Makes the link 0.2m long
-modifications[utils.geometry.Modification.DENSITY] = [2.0, utils.geometry.Modification.MULTIPLIER] # Doubles the link's density
+modifications = Modification()
+modifications.add_dimension(0.2, absolute=True) # Makes the link 0.2m long
+modificationsmodificationsTorso.add_density(2.0, absolute=False) # Doubles the link's density
+
 
 modifiers = [LinkModifier.from_name('r_upper_arm',robot, 0.022),
                 JointModifier.from_name('r_elbow',robot, 0.0344)]
@@ -84,6 +86,7 @@ utils.write_urdf_to_file(robot, output_file, gazebo_plugin_text)
 
 from urdfModifiers.core.linkModifier import LinkModifier
 from urdfModifiers.core.jointModifier import JointModifier
+from urdfModifiers.core.modification import Modification
 from urdfModifiers.utils import *
 import configparser
 
@@ -98,7 +101,7 @@ config = configparser.ConfigParser()
 config.read(config_file_path)
 
 for config_section in config.sections():
-    modifications = utils.parse_modifications(config[config_section])
+    modifications = Modification.from_config_section(config[config_section])
     selector = config_section
     if(selector == 'r_upper_arm'):
         modifiers = [LinkModifier.from_name('r_upper_arm',robot, 0.022),
