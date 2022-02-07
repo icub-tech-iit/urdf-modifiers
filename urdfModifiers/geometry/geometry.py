@@ -38,12 +38,3 @@ class RobotElement(Enum):
     LINK = auto()
     JOINT = auto()
 
-# class Modification():
-#     """Available modifications type"""
-#     DENSITY = "density"
-#     DIMENSION = "dimension"
-#     RADIUS = "radius"
-#     MASS = "mass"
-#     ABSOLUTE = True
-#     MULTIPLIER = False 
-#     SCALE= "_scale"
