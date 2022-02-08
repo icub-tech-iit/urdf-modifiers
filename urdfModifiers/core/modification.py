@@ -1,6 +1,8 @@
 from dataclasses import dataclass
 
+@dataclass
 class ModificationType:
+    """Standard class to describe a specific type of modification"""
     value = None
     absolute = False
 
@@ -20,6 +22,7 @@ class Modification:
 
     @classmethod
     def from_config_section(cls, config_section):
+        """Constructs a modification from a section of a configparser.ConfigParser class"""
         new_modification = cls()
 
         dimension_scale = config_section.get('dimension_scale', None)
@@ -52,15 +55,19 @@ class Modification:
         return new_modification
 
     def add_density(self, value, absolute):
+        """Adds a modification of the density"""
         self.density = ModificationType(value, absolute)
 
     def add_dimension(self, value, absolute):
+        """Adds a modification of the main dimension"""
         self.dimension = ModificationType(value, absolute)
 
     def add_mass(self, value, absolute):
+        """Adds a modification of the mass"""
         self.mass = ModificationType(value, absolute)
 
     def add_radius(self, value, absolute):
+        """Adds a modification of the radius"""
         self.radius = ModificationType(value, absolute)
 
     def __str__(self):
