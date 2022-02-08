@@ -26,7 +26,7 @@ def separate_gazebo_plugins(filename):
         lines = f.readlines()
         is_gazebo = False
         for line in lines:
-            if '<gazebo' in line or '<gazebo' in line:
+            if '<gazebo' in line or '< gazebo' in line:
                 is_gazebo = True
             if (is_gazebo):
                 gazebo_lines.append(line)
