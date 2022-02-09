@@ -40,7 +40,7 @@ Clone the repo and install the library:
 
 ```bash
 
-pip install "urdf-modifiers @ git+https://github.com/icub-tech-iit/urdf-modifiers"
+pip install "urdfModifiers @ git+https://github.com/icub-tech-iit/urdf-modifiers"
 
 ```
 
