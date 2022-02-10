@@ -3,6 +3,7 @@
 # GNU Lesser General Public License v2.1 or any later version.
 
 from . import modifier
+from . import modification
 from . import linkModifier
 from . import jointModifier
 
