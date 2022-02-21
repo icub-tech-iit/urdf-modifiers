@@ -1,10 +1,11 @@
 import unittest
 import copy
-from urdfModifiers.core import modification
 from urdfModifiers.core.modification import Modification
 from urdfModifiers.core.linkModifier import LinkModifier
+from urdfModifiers.core.jointModifier import JointModifier
 from urdfModifiers.geometry import *
 from urdfModifiers.utils import *
+from urdfpy import matrix_to_xyz_rpy 
 import math
 
 """
@@ -387,12 +388,213 @@ class LinkModifierTests(unittest.TestCase):
     
 class JointModifierTests(unittest.TestCase):
     def __init__(self, *args, **kwargs):
-        super(LinkModifierTests, self).__init__(*args, **kwargs)
+        super(JointModifierTests, self).__init__(*args, **kwargs)
         self.original_filename = './test_model.urdf'
         self.original_robot, _ = utils.load_robot_and_gazebo_plugins(self.original_filename, 'dummy.urdf')
 
     def setUp(self):
         self.modified_robot = copy.deepcopy(self.original_robot)
+
+    def test_relative_joint_change_x(self):
+
+        modifier = JointModifier.from_name('non_aligned_link_joint_before', self.modified_robot, dimension=geometry.Side.X)
+
+        modification = Modification()
+        modification.add_dimension(2, absolute=False)
+
+        modifier.modify(modification)
+
+        original_joint = [joint for joint in self.original_robot.joints if joint.name == 'non_aligned_link_joint_before'][0]
+        modified_joint = [joint for joint in self.modified_robot.joints if joint.name == 'non_aligned_link_joint_before'][0]
+
+        self.assertEqual(matrix_to_xyz_rpy(modified_joint.origin)[0],
+                         matrix_to_xyz_rpy(original_joint.origin)[0] * 2)
+
+        self.assertEqual(matrix_to_xyz_rpy(modified_joint.origin)[1],
+                         matrix_to_xyz_rpy(original_joint.origin)[1])
+
+        self.assertEqual(matrix_to_xyz_rpy(modified_joint.origin)[2],
+                         matrix_to_xyz_rpy(original_joint.origin)[2])
+
+    def test_relative_joint_change_x_from_0(self):
+
+        modifier = JointModifier.from_name('joint_to_ground', self.modified_robot, dimension=geometry.Side.X)
+
+        modification = Modification()
+        modification.add_dimension(2, absolute=False)
+
+        modifier.modify(modification)
+
+        original_joint = [joint for joint in self.original_robot.joints if joint.name == 'joint_to_ground'][0]
+        modified_joint = [joint for joint in self.modified_robot.joints if joint.name == 'joint_to_ground'][0]
+
+        self.assertEqual(matrix_to_xyz_rpy(modified_joint.origin)[0],
+                         matrix_to_xyz_rpy(original_joint.origin)[0])
+
+        self.assertEqual(matrix_to_xyz_rpy(modified_joint.origin)[1],
+                         matrix_to_xyz_rpy(original_joint.origin)[1])
+
+        self.assertEqual(matrix_to_xyz_rpy(modified_joint.origin)[2],
+                         matrix_to_xyz_rpy(original_joint.origin)[2])
+
+    def test_relative_joint_change_y(self):
+
+        modifier = JointModifier.from_name('non_aligned_link_joint_before', self.modified_robot, dimension=geometry.Side.Y)
+
+        modification = Modification()
+        modification.add_dimension(2, absolute=False)
+
+        modifier.modify(modification)
+
+        original_joint = [joint for joint in self.original_robot.joints if joint.name == 'non_aligned_link_joint_before'][0]
+        modified_joint = [joint for joint in self.modified_robot.joints if joint.name == 'non_aligned_link_joint_before'][0]
+
+        self.assertEqual(matrix_to_xyz_rpy(modified_joint.origin)[0],
+                         matrix_to_xyz_rpy(original_joint.origin)[0])
+
+        self.assertEqual(matrix_to_xyz_rpy(modified_joint.origin)[1],
+                         matrix_to_xyz_rpy(original_joint.origin)[1] * 2)
+
+        self.assertEqual(matrix_to_xyz_rpy(modified_joint.origin)[2],
+                         matrix_to_xyz_rpy(original_joint.origin)[2])
+
+    def test_relative_joint_change_y_from_0(self):
+
+        modifier = JointModifier.from_name('joint_to_ground', self.modified_robot, dimension=geometry.Side.Y)
+
+        modification = Modification()
+        modification.add_dimension(2, absolute=False)
+
+        modifier.modify(modification)
+
+        original_joint = [joint for joint in self.original_robot.joints if joint.name == 'joint_to_ground'][0]
+        modified_joint = [joint for joint in self.modified_robot.joints if joint.name == 'joint_to_ground'][0]
+
+        self.assertEqual(matrix_to_xyz_rpy(modified_joint.origin)[0],
+                         matrix_to_xyz_rpy(original_joint.origin)[0])
+
+        self.assertEqual(matrix_to_xyz_rpy(modified_joint.origin)[1],
+                         matrix_to_xyz_rpy(original_joint.origin)[1])
+
+        self.assertEqual(matrix_to_xyz_rpy(modified_joint.origin)[2],
+                         matrix_to_xyz_rpy(original_joint.origin)[2])
+
+    def test_relative_joint_change_z(self):
+
+        modifier = JointModifier.from_name('non_aligned_link_joint_before', self.modified_robot, dimension=geometry.Side.Z)
+
+        modification = Modification()
+        modification.add_dimension(2, absolute=False)
+
+        modifier.modify(modification)
+
+        original_joint = [joint for joint in self.original_robot.joints if joint.name == 'non_aligned_link_joint_before'][0]
+        modified_joint = [joint for joint in self.modified_robot.joints if joint.name == 'non_aligned_link_joint_before'][0]
+
+        self.assertEqual(matrix_to_xyz_rpy(modified_joint.origin)[0],
+                         matrix_to_xyz_rpy(original_joint.origin)[0])
+
+        self.assertEqual(matrix_to_xyz_rpy(modified_joint.origin)[1],
+                         matrix_to_xyz_rpy(original_joint.origin)[1])
+
+        self.assertEqual(matrix_to_xyz_rpy(modified_joint.origin)[2],
+                         matrix_to_xyz_rpy(original_joint.origin)[2] * 2)
+
+    def test_relative_joint_change_z_from_0(self):
+
+        modifier = JointModifier.from_name('joint_to_ground', self.modified_robot, dimension=geometry.Side.Z)
+
+        modification = Modification()
+        modification.add_dimension(2, absolute=False)
+
+        modifier.modify(modification)
+
+        original_joint = [joint for joint in self.original_robot.joints if joint.name == 'joint_to_ground'][0]
+        modified_joint = [joint for joint in self.modified_robot.joints if joint.name == 'joint_to_ground'][0]
+
+        self.assertEqual(matrix_to_xyz_rpy(modified_joint.origin)[0],
+                         matrix_to_xyz_rpy(original_joint.origin)[0])
+
+        self.assertEqual(matrix_to_xyz_rpy(modified_joint.origin)[1],
+                         matrix_to_xyz_rpy(original_joint.origin)[1])
+
+        self.assertEqual(matrix_to_xyz_rpy(modified_joint.origin)[2],
+                         matrix_to_xyz_rpy(original_joint.origin)[2])
+
+    def test_absolute_joint_change_x(self):
+
+        modifier = JointModifier.from_name('non_aligned_link_joint_before', self.modified_robot, dimension=geometry.Side.X)
+
+        modification = Modification()
+        modification.add_dimension(2, absolute=True)
+
+        modifier.modify(modification)
+
+        original_joint = [joint for joint in self.original_robot.joints if joint.name == 'non_aligned_link_joint_before'][0]
+        modified_joint = [joint for joint in self.modified_robot.joints if joint.name == 'non_aligned_link_joint_before'][0]
+
+        self.assertEqual(matrix_to_xyz_rpy(modified_joint.origin)[0],
+                         2)
+
+        self.assertEqual(matrix_to_xyz_rpy(modified_joint.origin)[1],
+                         matrix_to_xyz_rpy(original_joint.origin)[1])
+
+        self.assertEqual(matrix_to_xyz_rpy(modified_joint.origin)[2],
+                         matrix_to_xyz_rpy(original_joint.origin)[2])
+
+    def test_absolute_joint_change_y(self):
+
+        modifier = JointModifier.from_name('non_aligned_link_joint_before', self.modified_robot, dimension=geometry.Side.Y)
+
+        modification = Modification()
+        modification.add_dimension(2, absolute=True)
+
+        modifier.modify(modification)
+
+        original_joint = [joint for joint in self.original_robot.joints if joint.name == 'non_aligned_link_joint_before'][0]
+        modified_joint = [joint for joint in self.modified_robot.joints if joint.name == 'non_aligned_link_joint_before'][0]
+
+        self.assertEqual(matrix_to_xyz_rpy(modified_joint.origin)[0],
+                         matrix_to_xyz_rpy(original_joint.origin)[0])
+
+        self.assertEqual(matrix_to_xyz_rpy(modified_joint.origin)[1],
+                         2)
+
+        self.assertEqual(matrix_to_xyz_rpy(modified_joint.origin)[2],
+                         matrix_to_xyz_rpy(original_joint.origin)[2])
+
+    def test_absolute_joint_change_z(self):
+
+        modifier = JointModifier.from_name('non_aligned_link_joint_before', self.modified_robot, dimension=geometry.Side.Z)
+
+        modification = Modification()
+        modification.add_dimension(2, absolute=True)
+
+        modifier.modify(modification)
+
+        original_joint = [joint for joint in self.original_robot.joints if joint.name == 'non_aligned_link_joint_before'][0]
+        modified_joint = [joint for joint in self.modified_robot.joints if joint.name == 'non_aligned_link_joint_before'][0]
+
+        self.assertEqual(matrix_to_xyz_rpy(modified_joint.origin)[0],
+                         matrix_to_xyz_rpy(original_joint.origin)[0])
+
+        self.assertEqual(matrix_to_xyz_rpy(modified_joint.origin)[1],
+                         matrix_to_xyz_rpy(original_joint.origin)[1])
+
+        self.assertEqual(matrix_to_xyz_rpy(modified_joint.origin)[2],
+                         2)
+
+    def test_add_dimension_fails_if_no_dimension(self):
+
+        modifier = JointModifier.from_name('aligned_link_joint_after', self.modified_robot)
+
+        modification = Modification()
+        modification.add_dimension(2, absolute=True)
+
+        with self.assertRaises(Exception) as context:
+            modifier.modify(modification)
+
+        self.assertTrue('Dimension not specified for joint' in str(context.exception))
 
 if __name__ == '__main__':
     unittest.main()
