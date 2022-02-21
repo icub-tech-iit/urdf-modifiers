@@ -17,9 +17,9 @@ class Geometry(Enum):
 
 class Side(Enum):
     """The possible sides of a box geometry"""
-    WIDTH = auto()
-    HEIGHT = auto()
-    DEPTH = auto()
+    X = auto()
+    Y = auto()
+    Z = auto()
 
 class Limb(Enum, metaclass=ContainsBasedOnKeyMeta):
     """The possible limbs of the robot"""
