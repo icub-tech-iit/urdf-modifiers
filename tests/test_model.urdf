@@ -19,7 +19,7 @@
   <joint name="joint_to_ground" type="fixed">
     <parent link="world"/>
     <child link="base_link"/>
-    <origin xyz="0 0 0.5"/>
+    <origin xyz="0 0 0"/>
   </joint>
   <link name="aligned_link">
     <visual>
