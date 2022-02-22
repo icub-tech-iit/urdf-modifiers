@@ -8,19 +8,15 @@ from urdfModifiers.geometry import *
 @dataclass
 class LinkModifier(modifier.Modifier):
     """Class to modify links in a URDF"""
-    def __init__(self, link, dimension = None):
+    def __init__(self, link, axis = None):
         super().__init__(link, geometry.RobotElement.LINK)
         geometry_type, _ = self.get_geometry(self.get_visual())
-        if geometry_type == geometry.Geometry.CYLINDER and dimension is not None:
-            raise Exception("Modifier cannot have dimension for cylinder geometry")
-        if geometry_type == geometry.Geometry.SPHERE and dimension is not None:
-            raise Exception("Modifier cannot have dimension for sphere geometry")
-        self.dimension = dimension
+        self.axis = axis
 
     @classmethod
-    def from_name(cls, link_name, robot, dimension = None):
+    def from_name(cls, link_name, robot, axis = None):
         """Creates an instance of LinkModifier by passing the robot object and link name"""
-        return cls(LinkModifier.get_element_by_name(link_name, robot),dimension)
+        return cls(LinkModifier.get_element_by_name(link_name, robot), axis)
 
     @staticmethod
     def get_element_by_name(link_name, robot):
@@ -65,8 +61,13 @@ class LinkModifier(modifier.Modifier):
                 self.set_mass(modifications.mass.value)
             else:
                 self.set_mass(original_mass * modifications.mass.value)
+        if modifications.position:
+            original_position = self.get_origin_position()
+            if modifications.position.absolute:
+                self.set_origin_position(modifications.position.value)
+            else:
+                self.set_origin_position(original_position * modifications.position.value)
         self.update_inertia()
-        # self.modify_origin()
 
     def get_visual(self):
         """Returns the visual object of a link"""
@@ -80,15 +81,15 @@ class LinkModifier(modifier.Modifier):
         """Gets the significant length for a cylinder or box geometry"""
         geometry_type, visual_data = self.get_geometry(self.get_visual())
         if (geometry_type == geometry.Geometry.BOX):
-            if (self.dimension is not None):
-                if (self.dimension == geometry.Side.X):
+            if (self.axis is not None):
+                if (self.axis == geometry.Side.X):
                     return visual_data.size[0]
-                elif (self.dimension == geometry.Side.Y):
+                elif (self.axis == geometry.Side.Y):
                     return visual_data.size[1]
-                elif (self.dimension == geometry.Side.Z):
+                elif (self.axis == geometry.Side.Z):
                     return visual_data.size[2]
             else:
-                raise Exception(f"Error getting length for link {self.element.name}'s volume: Box geometry with no dimension")
+                raise Exception(f"Error getting length for link {self.element.name}'s volume: Box geometry with no axis")
         elif (geometry_type == geometry.Geometry.CYLINDER):
             return visual_data.length
         else:
@@ -112,30 +113,63 @@ class LinkModifier(modifier.Modifier):
         """Modifies a link's length, in a manner that is logical with its geometry"""
         geometry_type, visual_data = self.get_geometry(self.get_visual())
         if (geometry_type == geometry.Geometry.BOX):
-            if (self.dimension is not None):
-                if (self.dimension == geometry.Side.X):
+            if (self.axis is not None):
+                if (self.axis == geometry.Side.X):
                     visual_data.size[0] = length
-                elif (self.dimension == geometry.Side.Y):
+                elif (self.axis == geometry.Side.Y):
                     visual_data.size[1] = length
-                elif (self.dimension == geometry.Side.Z):
+                elif (self.axis == geometry.Side.Z):
                     visual_data.size[2] = length
             else:
-                print(f"Error modifying link {self.element.name}'s volume: Box geometry with no dimension")
+                raise Exception(f"Error modifying link {self.element.name}'s volume: Box geometry with no axis")
         elif (geometry_type == geometry.Geometry.CYLINDER):
             visual_data.length = length
         geometry_type_collision, visual_data_collision = self.get_geometry(self.get_collision())
         if (geometry_type_collision == geometry.Geometry.BOX):
-            if (self.dimension is not None):
-                if (self.dimension == geometry.Side.X):
+            if (self.axis is not None):
+                if (self.axis == geometry.Side.X):
                     visual_data_collision.size[0] = length
-                elif (self.dimension == geometry.Side.Y):
+                elif (self.axis == geometry.Side.Y):
                     visual_data_collision.size[1] = length
-                elif (self.dimension == geometry.Side.Z):
+                elif (self.axis == geometry.Side.Z):
                     visual_data_collision.size[2] = length
             else:
-                print(f"Error modifying link {self.element.name}'s volume: Box geometry with no dimension")
+                raise Exception(f"Error modifying link {self.element.name}'s volume: Box geometry with no axis")
         elif (geometry_type_collision == geometry.Geometry.CYLINDER):
             visual_data_collision.length = length
+
+    def get_origin_position(self):
+        visual_object = self.get_visual()
+        if (self.axis is not None):
+            if (self.axis == geometry.Side.X):
+                return matrix_to_xyz_rpy(visual_object.origin)[0]
+            elif (self.axis == geometry.Side.Y):
+                return matrix_to_xyz_rpy(visual_object.origin)[1]
+            elif (self.axis == geometry.Side.Z):
+                return matrix_to_xyz_rpy(visual_object.origin)[2]
+        else:
+            raise Exception(f"Error modifying link {self.element.name}'s position: no axis")
+
+    def set_origin_position(self, value):
+        visual_object = self.get_visual()
+        collision_object = self.get_collision()
+        inertia = self.element.inertial
+
+        origin = matrix_to_xyz_rpy(visual_object.origin)
+
+        if (self.axis is not None):
+            if (self.axis == geometry.Side.X):
+                origin[0] = value
+            elif (self.axis == geometry.Side.Y):
+                origin[1] = value
+            elif (self.axis == geometry.Side.Z):
+                origin[2] = value
+            visual_object.origin = xyz_rpy_to_matrix(origin)
+            collision_object.origin = xyz_rpy_to_matrix(origin)
+            if (inertia is not None):
+                inertia.origin = xyz_rpy_to_matrix(origin)
+        else:
+            raise Exception(f"Error modifying link {self.element.name}'s position: no axis")
 
     @staticmethod
     def get_visual_static(link):
@@ -177,31 +211,6 @@ class LinkModifier(modifier.Modifier):
         geometry_type, visual_data = self.get_geometry(self.get_visual())
         return self.get_mass() / self.calculate_volume(geometry_type, visual_data)
 
-    def modify_origin(self):
-        """Modifies the position of the origin by a given amount"""
-        visual_obj = self.get_visual()
-        geometry_type, visual_data = self.get_geometry(visual_obj)
-        xyz_rpy = matrix_to_xyz_rpy(visual_obj.origin)
-        if (geometry_type == geometry.Geometry.BOX):
-            if (self.dimension is not None):
-                if (self.dimension == geometry.Side.X):
-                    index_to_change = 0
-                if (self.dimension == geometry.Side.Y):
-                    index_to_change = 1
-                if (self.dimension == geometry.Side.Z):
-                    index_to_change = 2
-                if (self.calculate_origin_from_dimensions):
-                    xyz_rpy[index_to_change] = (visual_data.size[index_to_change] if not self.flip_direction else -visual_data.size[index_to_change]) / 2
-                xyz_rpy[index_to_change] += self.origin_modifier
-                visual_obj.origin = xyz_rpy_to_matrix(xyz_rpy) 
-            else:
-                print(f"Error modifying link {self.element.name}'s origin: Box geometry with no dimension")
-        elif (geometry_type == geometry.Geometry.CYLINDER):
-            xyz_rpy[2] = -visual_data.length / 2 + self.origin_modifier
-            visual_obj.origin = xyz_rpy_to_matrix(xyz_rpy)
-        elif (geometry_type == geometry.Geometry.SPHERE):
-            return
-
     def set_density(self, density):
         """Changes the mass of a link by preserving a given density."""
         geometry_type, visual_data = self.get_geometry(self.get_visual())
@@ -238,4 +247,4 @@ class LinkModifier(modifier.Modifier):
                         inertia[i,j] = 0
 
     def __str__(self):
-        return f"Link modifier with name {self.element.name}, origin modifier {self.origin_modifier}, dimension {self.dimension}"
+        return f"Link modifier with name {self.element.name}, origin modifier {self.origin_modifier}, axis {self.axis}"

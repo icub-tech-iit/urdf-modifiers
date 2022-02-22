@@ -18,6 +18,7 @@ class Modification:
         self.density = None
         self.dimension = None
         self.radius = None
+        self.position = None
         pass
 
     @classmethod
@@ -52,6 +53,14 @@ class Modification:
         radius = config_section.get('radius', None)
         if radius is not None:
             new_modification.add_radius(float(radius), True)
+
+        position_scale = config_section.get('position_scale', None)
+        if position_scale is not None:
+            new_modification.add_position(float(position_scale), False)
+        position = config_section.get('position', None)
+        if position is not None:
+            new_modification.add_position(float(position), True)
+
         return new_modification
 
     def add_density(self, value, absolute):
@@ -70,6 +79,10 @@ class Modification:
         """Adds a modification of the radius"""
         self.radius = ModificationType(value, absolute)
 
+    def add_position(self, value, absolute):
+        """Adds a modification of the position of the origin"""
+        self.position = ModificationType(value, absolute)
+
     def __str__(self):
         print_message = "Modification class with the following parameters: "
         if self.mass:
@@ -80,5 +93,7 @@ class Modification:
             print_message += f"{'Absolute' if self.dimension.absolute else 'Relative'} modification of dimension with value {self.dimension.value}. "
         if self.radius:
             print_message += f"{'Absolute' if self.radius.absolute else 'Relative'} modification of radius with value {self.radius.value}. "
+        if self.position:
+            print_message += f"{'Absolute' if self.position.absolute else 'Relative'} modification of origin position with value {self.position.value}."
         
         return print_message
