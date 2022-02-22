@@ -1,5 +1,6 @@
 import unittest
 import copy
+from urdfModifiers.core import modification
 from urdfModifiers.core.modification import Modification
 from urdfModifiers.core.linkModifier import LinkModifier
 from urdfModifiers.core.jointModifier import JointModifier
@@ -11,11 +12,11 @@ import math
 """
 Test Model:
 root Link: world has 1 child(ren)
-    child(1):  base_link -> sphere
-        child(1):  aligned_link -> cylinder
-            child(1):  connector_link_1 -> sphere
-                child(1):  non_aligned_link -> box
-                    child(1):  connector_link_2 -> sphere
+    child(1):  base_link -> sphere, collisions: yes
+        child(1):  aligned_link -> cylinder, collisions: yes
+            child(1):  connector_link_1 -> sphere, collisions: yes
+                child(1):  non_aligned_link -> box, collisions: yes
+                    child(1):  connector_link_2 -> sphere, collisions: no
 """
 
 class LinkModifierTests(unittest.TestCase):
@@ -77,6 +78,12 @@ class LinkModifierTests(unittest.TestCase):
         self.assertEqual(modified_link.visuals[0].geometry.cylinder.length, 
                          original_link.visuals[0].geometry.cylinder.length)
 
+        # check collision is equal
+        self.assertEqual(modified_link.collisions[0].geometry.cylinder.radius, 
+                         original_link.collisions[0].geometry.cylinder.radius)
+        self.assertEqual(modified_link.collisions[0].geometry.cylinder.length, 
+                         original_link.collisions[0].geometry.cylinder.length)
+
     def test_absolute_density_is_changed(self):
 
         modifier = LinkModifier.from_name('aligned_link', self.modified_robot)
@@ -101,6 +108,12 @@ class LinkModifierTests(unittest.TestCase):
         self.assertEqual(modified_link.visuals[0].geometry.cylinder.length, 
                          original_link.visuals[0].geometry.cylinder.length)
 
+        # check collision is equal
+        self.assertEqual(modified_link.collisions[0].geometry.cylinder.radius, 
+                         original_link.collisions[0].geometry.cylinder.radius)
+        self.assertEqual(modified_link.collisions[0].geometry.cylinder.length, 
+                         original_link.collisions[0].geometry.cylinder.length)
+
     def test_relative_radius_is_changed_cylinder(self):
 
         modifier = LinkModifier.from_name('aligned_link', self.modified_robot)
@@ -116,6 +129,9 @@ class LinkModifierTests(unittest.TestCase):
         self.assertEqual(modified_link.visuals[0].geometry.cylinder.radius, 
                          original_link.visuals[0].geometry.cylinder.radius * 2)
 
+        self.assertEqual(modified_link.collisions[0].geometry.cylinder.radius, 
+                         original_link.collisions[0].geometry.cylinder.radius * 2)
+
     def test_absolute_radius_is_changed_cylinder(self):
 
         modifier = LinkModifier.from_name('aligned_link', self.modified_robot)
@@ -128,6 +144,9 @@ class LinkModifierTests(unittest.TestCase):
         modified_link = [link for link in self.modified_robot.links if link.name == 'aligned_link'][0]
 
         self.assertEqual(modified_link.visuals[0].geometry.cylinder.radius, 
+                         2)
+
+        self.assertEqual(modified_link.collisions[0].geometry.cylinder.radius, 
                          2)
 
     def test_relative_radius_is_changed_sphere(self):
@@ -145,6 +164,9 @@ class LinkModifierTests(unittest.TestCase):
         self.assertEqual(modified_link.visuals[0].geometry.sphere.radius, 
                          original_link.visuals[0].geometry.sphere.radius * 2)
 
+        self.assertEqual(modified_link.collisions[0].geometry.sphere.radius, 
+                         original_link.collisions[0].geometry.sphere.radius * 2)
+
     def test_absolute_radius_is_changed_sphere(self):
 
         modifier = LinkModifier.from_name('base_link', self.modified_robot)
@@ -159,6 +181,9 @@ class LinkModifierTests(unittest.TestCase):
         self.assertEqual(modified_link.visuals[0].geometry.sphere.radius, 
                          2)
 
+        self.assertEqual(modified_link.collisions[0].geometry.sphere.radius, 
+                         2)
+
     def test_radius_fails_if_geometry_is_box(self):
 
         modifier = LinkModifier.from_name('non_aligned_link', self.modified_robot, dimension=geometry.Side.X)
@@ -170,6 +195,18 @@ class LinkModifierTests(unittest.TestCase):
             modifier.modify(modification)
 
         self.assertTrue('Cannot modify radius of box geometry' in str(context.exception))
+
+    def test_modifier_also_works_if_there_is_no_collision(self):
+
+        modifier = LinkModifier.from_name('connector_link_2', self.modified_robot)
+
+        modification = Modification()
+        modification.add_radius(2, absolute=True)
+
+        try:
+            modifier.modify(modification)
+        except Exception as e:
+            self.fail(f"Following exception was raised: {e}")
 
     def test_relative_length_is_changed_x(self):
 
@@ -191,6 +228,15 @@ class LinkModifierTests(unittest.TestCase):
 
         self.assertEqual(modified_link.visuals[0].geometry.box.size[2], 
                          original_link.visuals[0].geometry.box.size[2])
+
+        self.assertEqual(modified_link.collisions[0].geometry.box.size[0], 
+                         original_link.collisions[0].geometry.box.size[0] * 2)
+
+        self.assertEqual(modified_link.collisions[0].geometry.box.size[1], 
+                         original_link.collisions[0].geometry.box.size[1])
+
+        self.assertEqual(modified_link.collisions[0].geometry.box.size[2], 
+                         original_link.collisions[0].geometry.box.size[2])
 
         # check that origin is not being modified
         self.assertEqual(modified_link.visuals[0].origin.all(),
@@ -217,6 +263,15 @@ class LinkModifierTests(unittest.TestCase):
         self.assertEqual(modified_link.visuals[0].geometry.box.size[2], 
                          original_link.visuals[0].geometry.box.size[2])
 
+        self.assertEqual(modified_link.collisions[0].geometry.box.size[0], 
+                         original_link.collisions[0].geometry.box.size[0])
+
+        self.assertEqual(modified_link.collisions[0].geometry.box.size[1], 
+                         original_link.collisions[0].geometry.box.size[1] * 2)
+
+        self.assertEqual(modified_link.collisions[0].geometry.box.size[2], 
+                         original_link.collisions[0].geometry.box.size[2])
+
         # check that origin is not being modified
         self.assertEqual(modified_link.visuals[0].origin.all(),
                          original_link.visuals[0].origin.all())
@@ -242,6 +297,15 @@ class LinkModifierTests(unittest.TestCase):
         self.assertEqual(modified_link.visuals[0].geometry.box.size[2], 
                          original_link.visuals[0].geometry.box.size[2] * 2)
 
+        self.assertEqual(modified_link.collisions[0].geometry.box.size[0], 
+                         original_link.collisions[0].geometry.box.size[0])
+
+        self.assertEqual(modified_link.collisions[0].geometry.box.size[1], 
+                         original_link.collisions[0].geometry.box.size[1])
+
+        self.assertEqual(modified_link.collisions[0].geometry.box.size[2], 
+                         original_link.collisions[0].geometry.box.size[2] * 2)
+
         # check that origin is not being modified
         self.assertEqual(modified_link.visuals[0].origin.all(),
                          original_link.visuals[0].origin.all())
@@ -251,7 +315,7 @@ class LinkModifierTests(unittest.TestCase):
         modifier = LinkModifier.from_name('non_aligned_link', self.modified_robot, dimension=geometry.Side.X)
 
         modification = Modification()
-        modification.add_dimension(2, absolute=True)
+        modification.add_dimension(3, absolute=True)
 
         modifier.modify(modification)
 
@@ -259,13 +323,22 @@ class LinkModifierTests(unittest.TestCase):
         modified_link = [link for link in self.modified_robot.links if link.name == 'non_aligned_link'][0]
 
         self.assertEqual(modified_link.visuals[0].geometry.box.size[0], 
-                         2)
+                         3)
 
         self.assertEqual(modified_link.visuals[0].geometry.box.size[1], 
                          original_link.visuals[0].geometry.box.size[1])
 
         self.assertEqual(modified_link.visuals[0].geometry.box.size[2], 
                          original_link.visuals[0].geometry.box.size[2])
+
+        self.assertEqual(modified_link.collisions[0].geometry.box.size[0], 
+                         3)
+
+        self.assertEqual(modified_link.collisions[0].geometry.box.size[1], 
+                         original_link.collisions[0].geometry.box.size[1])
+
+        self.assertEqual(modified_link.collisions[0].geometry.box.size[2], 
+                         original_link.collisions[0].geometry.box.size[2])
 
         # check that origin is not being modified
         self.assertEqual(modified_link.visuals[0].origin.all(),
@@ -276,7 +349,7 @@ class LinkModifierTests(unittest.TestCase):
         modifier = LinkModifier.from_name('non_aligned_link', self.modified_robot, dimension=geometry.Side.Y)
 
         modification = Modification()
-        modification.add_dimension(2, absolute=True)
+        modification.add_dimension(3, absolute=True)
 
         modifier.modify(modification)
 
@@ -287,10 +360,19 @@ class LinkModifierTests(unittest.TestCase):
                          original_link.visuals[0].geometry.box.size[0])
 
         self.assertEqual(modified_link.visuals[0].geometry.box.size[1], 
-                         2)
+                         3)
 
         self.assertEqual(modified_link.visuals[0].geometry.box.size[2], 
                          original_link.visuals[0].geometry.box.size[2])
+
+        self.assertEqual(modified_link.collisions[0].geometry.box.size[0], 
+                         original_link.collisions[0].geometry.box.size[0])
+
+        self.assertEqual(modified_link.collisions[0].geometry.box.size[1], 
+                         3)
+
+        self.assertEqual(modified_link.collisions[0].geometry.box.size[2], 
+                         original_link.collisions[0].geometry.box.size[2])
 
         # check that origin is not being modified
         self.assertEqual(modified_link.visuals[0].origin.all(),
@@ -301,7 +383,7 @@ class LinkModifierTests(unittest.TestCase):
         modifier = LinkModifier.from_name('non_aligned_link', self.modified_robot, dimension=geometry.Side.Z)
 
         modification = Modification()
-        modification.add_dimension(2, absolute=True)
+        modification.add_dimension(3, absolute=True)
 
         modifier.modify(modification)
 
@@ -315,7 +397,16 @@ class LinkModifierTests(unittest.TestCase):
                          original_link.visuals[0].geometry.box.size[1])
 
         self.assertEqual(modified_link.visuals[0].geometry.box.size[2], 
-                         2)
+                         3)
+
+        self.assertEqual(modified_link.collisions[0].geometry.box.size[0], 
+                         original_link.collisions[0].geometry.box.size[0])
+
+        self.assertEqual(modified_link.collisions[0].geometry.box.size[1], 
+                         original_link.collisions[0].geometry.box.size[1])
+
+        self.assertEqual(modified_link.collisions[0].geometry.box.size[2], 
+                         3)
 
         # check that origin is not being modified
         self.assertEqual(modified_link.visuals[0].origin.all(),
@@ -336,6 +427,9 @@ class LinkModifierTests(unittest.TestCase):
         self.assertEqual(modified_link.visuals[0].geometry.cylinder.length, 
                          original_link.visuals[0].geometry.cylinder.length * 2)
 
+        self.assertEqual(modified_link.collisions[0].geometry.cylinder.length, 
+                         original_link.collisions[0].geometry.cylinder.length * 2)
+
         # check that origin is not being modified
         self.assertEqual(modified_link.visuals[0].origin.all(),
                          original_link.visuals[0].origin.all())
@@ -345,7 +439,7 @@ class LinkModifierTests(unittest.TestCase):
         modifier = LinkModifier.from_name('aligned_link', self.modified_robot)
 
         modification = Modification()
-        modification.add_dimension(2, absolute=True)
+        modification.add_dimension(3, absolute=True)
 
         modifier.modify(modification)
 
@@ -353,7 +447,10 @@ class LinkModifierTests(unittest.TestCase):
         modified_link = [link for link in self.modified_robot.links if link.name == 'aligned_link'][0]
 
         self.assertEqual(modified_link.visuals[0].geometry.cylinder.length, 
-                         2)
+                         3)
+
+        self.assertEqual(modified_link.collisions[0].geometry.cylinder.length, 
+                         3)
 
         # check that origin is not being modified
         self.assertEqual(modified_link.visuals[0].origin.all(),
