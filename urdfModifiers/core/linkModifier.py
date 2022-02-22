@@ -72,6 +72,10 @@ class LinkModifier(modifier.Modifier):
         """Returns the visual object of a link"""
         return self.element.visuals[0]
 
+    def get_collision(self):
+        """Returns the collision object of a link"""
+        return (self.element.collisions[0] if self.element.collisions else None)
+
     def get_significant_length(self):
         """Gets the significant length for a cylinder or box geometry"""
         geometry_type, visual_data = self.get_geometry(self.get_visual())
@@ -100,6 +104,9 @@ class LinkModifier(modifier.Modifier):
         geometry_type, visual_data = self.get_geometry(self.get_visual())
         if (geometry_type == geometry.Geometry.CYLINDER or geometry_type == geometry.Geometry.SPHERE):
             visual_data.radius = new_radius
+        geometry_type_collision, visual_data_collision = self.get_geometry(self.get_collision())
+        if geometry_type_collision and (geometry_type_collision == geometry.Geometry.CYLINDER or geometry_type_collision == geometry.Geometry.SPHERE):
+            visual_data_collision.radius = new_radius
 
     def set_length(self, length):
         """Modifies a link's length, in a manner that is logical with its geometry"""
@@ -116,6 +123,19 @@ class LinkModifier(modifier.Modifier):
                 print(f"Error modifying link {self.element.name}'s volume: Box geometry with no dimension")
         elif (geometry_type == geometry.Geometry.CYLINDER):
             visual_data.length = length
+        geometry_type_collision, visual_data_collision = self.get_geometry(self.get_collision())
+        if (geometry_type_collision == geometry.Geometry.BOX):
+            if (self.dimension is not None):
+                if (self.dimension == geometry.Side.X):
+                    visual_data_collision.size[0] = length
+                elif (self.dimension == geometry.Side.Y):
+                    visual_data_collision.size[1] = length
+                elif (self.dimension == geometry.Side.Z):
+                    visual_data_collision.size[2] = length
+            else:
+                print(f"Error modifying link {self.element.name}'s volume: Box geometry with no dimension")
+        elif (geometry_type_collision == geometry.Geometry.CYLINDER):
+            visual_data_collision.length = length
 
     @staticmethod
     def get_visual_static(link):
@@ -123,14 +143,17 @@ class LinkModifier(modifier.Modifier):
         return link.visuals[0]
 
     @staticmethod
-    def get_geometry(visual_obj):
-        """Returns the geometry type and the corresponding geometry object for a given visual"""
-        if (visual_obj.geometry.box is not None):
-            return [geometry.Geometry.BOX, visual_obj.geometry.box]
-        if (visual_obj.geometry.cylinder is not None):
-            return [geometry.Geometry.CYLINDER, visual_obj.geometry.cylinder]
-        if (visual_obj.geometry.sphere is not None):
-            return [geometry.Geometry.SPHERE, visual_obj.geometry.sphere]
+    def get_geometry(geometry_holder):
+        """Returns the geometry type and the corresponding geometry object for a given geometry holder (visual/collision)"""
+        if geometry_holder is None:
+            return [None, None]
+        if (geometry_holder.geometry.box is not None):
+            return [geometry.Geometry.BOX, geometry_holder.geometry.box]
+        if (geometry_holder.geometry.cylinder is not None):
+            return [geometry.Geometry.CYLINDER, geometry_holder.geometry.cylinder]
+        if (geometry_holder.geometry.sphere is not None):
+            return [geometry.Geometry.SPHERE, geometry_holder.geometry.sphere]
+        
 
     def calculate_volume(self, geometry_type, visual_data):
         """Calculates volume with the formula that corresponds to the geometry"""
