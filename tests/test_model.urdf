@@ -104,6 +104,6 @@
   <joint name="non_aligned_link_joint_after" type="fixed">
     <parent link="non_aligned_link"/>
     <child link="connector_link_2"/>
-    <origin xyz="0 0 2"/>
+    <origin xyz="0.5 0.5 2"/>
   </joint>
 </robot>
