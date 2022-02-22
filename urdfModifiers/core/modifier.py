@@ -9,7 +9,3 @@ class Modifier(metaclass=ABCMeta):
     @abstractmethod
     def modify(self, modifications):
         pass
-
-    @abstractmethod
-    def modify_origin(self):
-        pass

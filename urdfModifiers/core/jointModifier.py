@@ -4,16 +4,16 @@ from urdfpy import xyz_rpy_to_matrix, matrix_to_xyz_rpy
 
 class JointModifier(modifier.Modifier):
     """Class to modify joints in a URDF"""
-    def __init__(self, joint, dimension = None):
+    def __init__(self, joint, axis = None):
         super().__init__(joint, RobotElement.JOINT)
-        self.dimension = dimension
+        self.axis = axis
         
 
     @classmethod
-    def from_name(cls, joint_name, robot, dimension = None):
+    def from_name(cls, joint_name, robot, axis = None):
         """Creates an instance of LinkModifier by passing the robot object and link name"""
         joint = JointModifier.get_element_by_name(joint_name, robot)
-        return cls(joint, dimension)
+        return cls(joint, axis)
 
     @staticmethod
     def get_element_by_name(joint_name, robot):
@@ -25,47 +25,27 @@ class JointModifier(modifier.Modifier):
             return None
 
     def modify(self, modifications):
-        """Performs the dimension and density modifications to the current link"""
-        if modifications.dimension:
-            if self.dimension is None:
-                raise Exception('Dimension not specified for joint')
+        """Performs the position modifications to the current joint"""
+        if modifications.position:
+            if self.axis is None:
+                raise Exception('Axis not specified for joint')
             xyz_rpy = matrix_to_xyz_rpy(self.element.origin)
             original_x = xyz_rpy[0]
             original_y = xyz_rpy[1]
             original_z = xyz_rpy[2]
-            if modifications.dimension.absolute:
-                if (self.dimension == Side.X):
-                    xyz_rpy[0] = modifications.dimension.value
-                elif (self.dimension == Side.Y):
-                    xyz_rpy[1] = modifications.dimension.value
-                elif (self.dimension == Side.Z):
-                    xyz_rpy[2] = modifications.dimension.value
+            if modifications.position.absolute:
+                if (self.axis == Side.X):
+                    xyz_rpy[0] = modifications.position.value
+                elif (self.axis == Side.Y):
+                    xyz_rpy[1] = modifications.position.value
+                elif (self.axis == Side.Z):
+                    xyz_rpy[2] = modifications.position.value
             else:
-                if (self.dimension == Side.X):
-                    xyz_rpy[0] = original_x * modifications.dimension.value
-                elif (self.dimension == Side.Y):
-                    xyz_rpy[1] = original_y * modifications.dimension.value
-                elif (self.dimension == Side.Z):
-                    xyz_rpy[2] = original_z * modifications.dimension.value
+                if (self.axis == Side.X):
+                    xyz_rpy[0] = original_x * modifications.position.value
+                elif (self.axis == Side.Y):
+                    xyz_rpy[1] = original_y * modifications.position.value
+                elif (self.axis == Side.Z):
+                    xyz_rpy[2] = original_z * modifications.position.value
             self.element.origin = xyz_rpy_to_matrix(xyz_rpy) 
                 
-
-    # def get_parent_significant_length(self):
-    #     """Gets the significant length of the parent link that defines the new position of the joint"""
-    #     parent_visual_obj = LinkModifier.get_visual_static(self.parent)
-    #     parent_geometry_type, parent_visual_data = LinkModifier.get_geometry(parent_visual_obj)
-    #     if (parent_geometry_type == Geometry.CYLINDER):
-    #         return parent_visual_data.length
-    #     elif (parent_geometry_type == Geometry.BOX):
-    #         return parent_visual_data.size.max()
-    #     else:
-    #         return 0
-
-    def modify_origin(self, length):
-        """Modifies the position of the origin by a given amount"""
-        xyz_rpy = matrix_to_xyz_rpy(self.element.origin)
-        xyz_rpy[2] = length / (2 if self.take_half_length else 1)
-        if self.flip_direction:
-            xyz_rpy[2] *= -1
-        xyz_rpy[2] += self.origin_modifier
-        self.element.origin = xyz_rpy_to_matrix(xyz_rpy)
