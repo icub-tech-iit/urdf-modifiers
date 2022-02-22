@@ -1,6 +1,5 @@
 import unittest
 import copy
-from urdfModifiers.core import modification
 from urdfModifiers.core.modification import Modification
 from urdfModifiers.core.linkModifier import LinkModifier
 from urdfModifiers.core.jointModifier import JointModifier
@@ -186,7 +185,7 @@ class LinkModifierTests(unittest.TestCase):
 
     def test_radius_fails_if_geometry_is_box(self):
 
-        modifier = LinkModifier.from_name('non_aligned_link', self.modified_robot, dimension=geometry.Side.X)
+        modifier = LinkModifier.from_name('non_aligned_link', self.modified_robot, axis=geometry.Side.X)
 
         modification = Modification()
         modification.add_radius(2, absolute=True)
@@ -210,7 +209,7 @@ class LinkModifierTests(unittest.TestCase):
 
     def test_relative_length_is_changed_x(self):
 
-        modifier = LinkModifier.from_name('non_aligned_link', self.modified_robot, dimension=geometry.Side.X)
+        modifier = LinkModifier.from_name('non_aligned_link', self.modified_robot, axis=geometry.Side.X)
 
         modification = Modification()
         modification.add_dimension(2, absolute=False)
@@ -244,7 +243,7 @@ class LinkModifierTests(unittest.TestCase):
     
     def test_relative_length_is_changed_y(self):
 
-        modifier = LinkModifier.from_name('non_aligned_link', self.modified_robot, dimension=geometry.Side.Y)
+        modifier = LinkModifier.from_name('non_aligned_link', self.modified_robot, axis=geometry.Side.Y)
 
         modification = Modification()
         modification.add_dimension(2, absolute=False)
@@ -278,7 +277,7 @@ class LinkModifierTests(unittest.TestCase):
 
     def test_relative_length_is_changed_z(self):
 
-        modifier = LinkModifier.from_name('non_aligned_link', self.modified_robot, dimension=geometry.Side.Z)
+        modifier = LinkModifier.from_name('non_aligned_link', self.modified_robot, axis=geometry.Side.Z)
 
         modification = Modification()
         modification.add_dimension(2, absolute=False)
@@ -312,7 +311,7 @@ class LinkModifierTests(unittest.TestCase):
 
     def test_absolute_length_is_changed_x(self):
 
-        modifier = LinkModifier.from_name('non_aligned_link', self.modified_robot, dimension=geometry.Side.X)
+        modifier = LinkModifier.from_name('non_aligned_link', self.modified_robot, axis=geometry.Side.X)
 
         modification = Modification()
         modification.add_dimension(3, absolute=True)
@@ -346,7 +345,7 @@ class LinkModifierTests(unittest.TestCase):
     
     def test_absolute_length_is_changed_y(self):
 
-        modifier = LinkModifier.from_name('non_aligned_link', self.modified_robot, dimension=geometry.Side.Y)
+        modifier = LinkModifier.from_name('non_aligned_link', self.modified_robot, axis=geometry.Side.Y)
 
         modification = Modification()
         modification.add_dimension(3, absolute=True)
@@ -380,7 +379,7 @@ class LinkModifierTests(unittest.TestCase):
 
     def test_absolute_length_is_changed_z(self):
 
-        modifier = LinkModifier.from_name('non_aligned_link', self.modified_robot, dimension=geometry.Side.Z)
+        modifier = LinkModifier.from_name('non_aligned_link', self.modified_robot, axis=geometry.Side.Z)
 
         modification = Modification()
         modification.add_dimension(3, absolute=True)
@@ -456,6 +455,174 @@ class LinkModifierTests(unittest.TestCase):
         self.assertEqual(modified_link.visuals[0].origin.all(),
                          original_link.visuals[0].origin.all())
 
+    def test_relative_origin_position_is_changed_x(self):
+
+        modifier = LinkModifier.from_name('non_aligned_link', self.modified_robot, axis=geometry.Side.X)
+
+        modification = Modification()
+        modification.add_position(2, absolute=False)
+
+        modifier.modify(modification)
+
+        original_link = [link for link in self.original_robot.links if link.name == 'non_aligned_link'][0]
+        modified_link = [link for link in self.modified_robot.links if link.name == 'non_aligned_link'][0]
+
+        self.assertEqual(matrix_to_xyz_rpy(modified_link.visuals[0].origin)[0],
+                         matrix_to_xyz_rpy(original_link.visuals[0].origin)[0] * 2)
+
+        self.assertEqual(matrix_to_xyz_rpy(modified_link.visuals[0].origin)[1],
+                         matrix_to_xyz_rpy(original_link.visuals[0].origin)[1])
+
+        self.assertEqual(matrix_to_xyz_rpy(modified_link.visuals[0].origin)[2],
+                         matrix_to_xyz_rpy(original_link.visuals[0].origin)[2])
+
+    def test_relative_origin_position_is_changed_y(self):
+
+        modifier = LinkModifier.from_name('non_aligned_link', self.modified_robot, axis=geometry.Side.Y)
+
+        modification = Modification()
+        modification.add_position(2, absolute=False)
+
+        modifier.modify(modification)
+
+        original_link = [link for link in self.original_robot.links if link.name == 'non_aligned_link'][0]
+        modified_link = [link for link in self.modified_robot.links if link.name == 'non_aligned_link'][0]
+
+        self.assertEqual(matrix_to_xyz_rpy(modified_link.visuals[0].origin)[0],
+                         matrix_to_xyz_rpy(original_link.visuals[0].origin)[0])
+
+        self.assertEqual(matrix_to_xyz_rpy(modified_link.visuals[0].origin)[1],
+                         matrix_to_xyz_rpy(original_link.visuals[0].origin)[1] * 2)
+
+        self.assertEqual(matrix_to_xyz_rpy(modified_link.visuals[0].origin)[2],
+                         matrix_to_xyz_rpy(original_link.visuals[0].origin)[2])
+
+    def test_relative_origin_position_is_changed_z(self):
+
+        modifier = LinkModifier.from_name('non_aligned_link', self.modified_robot, axis=geometry.Side.Z)
+
+        modification = Modification()
+        modification.add_position(2, absolute=False)
+
+        modifier.modify(modification)
+
+        original_link = [link for link in self.original_robot.links if link.name == 'non_aligned_link'][0]
+        modified_link = [link for link in self.modified_robot.links if link.name == 'non_aligned_link'][0]
+
+        self.assertEqual(matrix_to_xyz_rpy(modified_link.visuals[0].origin)[0],
+                         matrix_to_xyz_rpy(original_link.visuals[0].origin)[0])
+
+        self.assertEqual(matrix_to_xyz_rpy(modified_link.visuals[0].origin)[1],
+                         matrix_to_xyz_rpy(original_link.visuals[0].origin)[1])
+
+        self.assertEqual(matrix_to_xyz_rpy(modified_link.visuals[0].origin)[2],
+                         matrix_to_xyz_rpy(original_link.visuals[0].origin)[2] * 2)
+
+    def test_absolute_origin_position_is_changed_x(self):
+
+        modifier = LinkModifier.from_name('non_aligned_link', self.modified_robot, axis=geometry.Side.X)
+
+        modification = Modification()
+        modification.add_position(3, absolute=True)
+
+        modifier.modify(modification)
+
+        original_link = [link for link in self.original_robot.links if link.name == 'non_aligned_link'][0]
+        modified_link = [link for link in self.modified_robot.links if link.name == 'non_aligned_link'][0]
+
+        self.assertEqual(matrix_to_xyz_rpy(modified_link.visuals[0].origin)[0],
+                         3)
+
+        self.assertEqual(matrix_to_xyz_rpy(modified_link.visuals[0].origin)[1],
+                         matrix_to_xyz_rpy(original_link.visuals[0].origin)[1])
+
+        self.assertEqual(matrix_to_xyz_rpy(modified_link.visuals[0].origin)[2],
+                         matrix_to_xyz_rpy(original_link.visuals[0].origin)[2])
+
+    def test_absolute_origin_position_is_changed_y(self):
+
+        modifier = LinkModifier.from_name('non_aligned_link', self.modified_robot, axis=geometry.Side.Y)
+
+        modification = Modification()
+        modification.add_position(3, absolute=True)
+
+        modifier.modify(modification)
+
+        original_link = [link for link in self.original_robot.links if link.name == 'non_aligned_link'][0]
+        modified_link = [link for link in self.modified_robot.links if link.name == 'non_aligned_link'][0]
+
+        self.assertEqual(matrix_to_xyz_rpy(modified_link.visuals[0].origin)[0],
+                         matrix_to_xyz_rpy(original_link.visuals[0].origin)[0])
+
+        self.assertEqual(matrix_to_xyz_rpy(modified_link.visuals[0].origin)[1],
+                         3)
+
+        self.assertEqual(matrix_to_xyz_rpy(modified_link.visuals[0].origin)[2],
+                         matrix_to_xyz_rpy(original_link.visuals[0].origin)[2])
+
+    def test_absolute_origin_position_is_changed_z(self):
+
+        modifier = LinkModifier.from_name('non_aligned_link', self.modified_robot, axis=geometry.Side.Z)
+
+        modification = Modification()
+        modification.add_position(3, absolute=True)
+
+        modifier.modify(modification)
+
+        original_link = [link for link in self.original_robot.links if link.name == 'non_aligned_link'][0]
+        modified_link = [link for link in self.modified_robot.links if link.name == 'non_aligned_link'][0]
+
+        self.assertEqual(matrix_to_xyz_rpy(modified_link.visuals[0].origin)[0],
+                         matrix_to_xyz_rpy(original_link.visuals[0].origin)[0])
+
+        self.assertEqual(matrix_to_xyz_rpy(modified_link.visuals[0].origin)[1],
+                         matrix_to_xyz_rpy(original_link.visuals[0].origin)[1])
+
+        self.assertEqual(matrix_to_xyz_rpy(modified_link.visuals[0].origin)[2],
+                         3)
+
+    def test_absolute_origin_position_is_changed_cylinder(self):
+
+        modifier = LinkModifier.from_name('aligned_link', self.modified_robot, axis=geometry.Side.Y)
+
+        modification = Modification()
+        modification.add_position(3, absolute=True)
+
+        modifier.modify(modification)
+
+        original_link = [link for link in self.original_robot.links if link.name == 'aligned_link'][0]
+        modified_link = [link for link in self.modified_robot.links if link.name == 'aligned_link'][0]
+
+        self.assertEqual(matrix_to_xyz_rpy(modified_link.visuals[0].origin)[0],
+                         matrix_to_xyz_rpy(original_link.visuals[0].origin)[0])
+
+        self.assertEqual(matrix_to_xyz_rpy(modified_link.visuals[0].origin)[1],
+                         3)
+
+        self.assertEqual(matrix_to_xyz_rpy(modified_link.visuals[0].origin)[2],
+                         matrix_to_xyz_rpy(original_link.visuals[0].origin)[2])
+
+    def test_absolute_origin_position_is_changed_sphere(self):
+
+        modifier = LinkModifier.from_name('base_link', self.modified_robot, axis=geometry.Side.Y)
+
+        modification = Modification()
+        modification.add_position(3, absolute=True)
+
+        modifier.modify(modification)
+
+        original_link = [link for link in self.original_robot.links if link.name == 'base_link'][0]
+        modified_link = [link for link in self.modified_robot.links if link.name == 'base_link'][0]
+
+        self.assertEqual(matrix_to_xyz_rpy(modified_link.visuals[0].origin)[0],
+                         matrix_to_xyz_rpy(original_link.visuals[0].origin)[0])
+
+        self.assertEqual(matrix_to_xyz_rpy(modified_link.visuals[0].origin)[1],
+                         3)
+
+        self.assertEqual(matrix_to_xyz_rpy(modified_link.visuals[0].origin)[2],
+                         matrix_to_xyz_rpy(original_link.visuals[0].origin)[2])
+
     def test_dimension_fails_if_geometry_is_sphere(self):
 
         modifier = LinkModifier.from_name('base_link', self.modified_robot)
@@ -467,20 +634,6 @@ class LinkModifierTests(unittest.TestCase):
             modifier.modify(modification)
 
         self.assertTrue('Cannot modify length of sphere geometry' in str(context.exception))
-
-    def test_fails_when_add_dimension_to_cylinder_link(self):
-
-        with self.assertRaises(Exception) as context:
-            modifier = LinkModifier.from_name('aligned_link', self.modified_robot, dimension=geometry.Side.Z)
-
-        self.assertTrue('Modifier cannot have dimension for cylinder geometry' in str(context.exception))
-
-    def test_fails_when_add_dimension_to_sphere_link(self):
-
-        with self.assertRaises(Exception) as context:
-            modifier = LinkModifier.from_name('base_link', self.modified_robot, dimension=geometry.Side.Z)
-
-        self.assertTrue('Modifier cannot have dimension for sphere geometry' in str(context.exception))
     
     
 class JointModifierTests(unittest.TestCase):
@@ -494,15 +647,15 @@ class JointModifierTests(unittest.TestCase):
 
     def test_relative_joint_change_x(self):
 
-        modifier = JointModifier.from_name('non_aligned_link_joint_before', self.modified_robot, dimension=geometry.Side.X)
+        modifier = JointModifier.from_name('non_aligned_link_joint_after', self.modified_robot, axis=geometry.Side.X)
 
         modification = Modification()
-        modification.add_dimension(2, absolute=False)
+        modification.add_position(2, absolute=False)
 
         modifier.modify(modification)
 
-        original_joint = [joint for joint in self.original_robot.joints if joint.name == 'non_aligned_link_joint_before'][0]
-        modified_joint = [joint for joint in self.modified_robot.joints if joint.name == 'non_aligned_link_joint_before'][0]
+        original_joint = [joint for joint in self.original_robot.joints if joint.name == 'non_aligned_link_joint_after'][0]
+        modified_joint = [joint for joint in self.modified_robot.joints if joint.name == 'non_aligned_link_joint_after'][0]
 
         self.assertEqual(matrix_to_xyz_rpy(modified_joint.origin)[0],
                          matrix_to_xyz_rpy(original_joint.origin)[0] * 2)
@@ -515,10 +668,10 @@ class JointModifierTests(unittest.TestCase):
 
     def test_relative_joint_change_x_from_0(self):
 
-        modifier = JointModifier.from_name('joint_to_ground', self.modified_robot, dimension=geometry.Side.X)
+        modifier = JointModifier.from_name('joint_to_ground', self.modified_robot, axis=geometry.Side.X)
 
         modification = Modification()
-        modification.add_dimension(2, absolute=False)
+        modification.add_position(2, absolute=False)
 
         modifier.modify(modification)
 
@@ -536,15 +689,15 @@ class JointModifierTests(unittest.TestCase):
 
     def test_relative_joint_change_y(self):
 
-        modifier = JointModifier.from_name('non_aligned_link_joint_before', self.modified_robot, dimension=geometry.Side.Y)
+        modifier = JointModifier.from_name('non_aligned_link_joint_after', self.modified_robot, axis=geometry.Side.Y)
 
         modification = Modification()
-        modification.add_dimension(2, absolute=False)
+        modification.add_position(2, absolute=False)
 
         modifier.modify(modification)
 
-        original_joint = [joint for joint in self.original_robot.joints if joint.name == 'non_aligned_link_joint_before'][0]
-        modified_joint = [joint for joint in self.modified_robot.joints if joint.name == 'non_aligned_link_joint_before'][0]
+        original_joint = [joint for joint in self.original_robot.joints if joint.name == 'non_aligned_link_joint_after'][0]
+        modified_joint = [joint for joint in self.modified_robot.joints if joint.name == 'non_aligned_link_joint_after'][0]
 
         self.assertEqual(matrix_to_xyz_rpy(modified_joint.origin)[0],
                          matrix_to_xyz_rpy(original_joint.origin)[0])
@@ -557,10 +710,10 @@ class JointModifierTests(unittest.TestCase):
 
     def test_relative_joint_change_y_from_0(self):
 
-        modifier = JointModifier.from_name('joint_to_ground', self.modified_robot, dimension=geometry.Side.Y)
+        modifier = JointModifier.from_name('joint_to_ground', self.modified_robot, axis=geometry.Side.Y)
 
         modification = Modification()
-        modification.add_dimension(2, absolute=False)
+        modification.add_position(2, absolute=False)
 
         modifier.modify(modification)
 
@@ -578,15 +731,15 @@ class JointModifierTests(unittest.TestCase):
 
     def test_relative_joint_change_z(self):
 
-        modifier = JointModifier.from_name('non_aligned_link_joint_before', self.modified_robot, dimension=geometry.Side.Z)
+        modifier = JointModifier.from_name('non_aligned_link_joint_after', self.modified_robot, axis=geometry.Side.Z)
 
         modification = Modification()
-        modification.add_dimension(2, absolute=False)
+        modification.add_position(2, absolute=False)
 
         modifier.modify(modification)
 
-        original_joint = [joint for joint in self.original_robot.joints if joint.name == 'non_aligned_link_joint_before'][0]
-        modified_joint = [joint for joint in self.modified_robot.joints if joint.name == 'non_aligned_link_joint_before'][0]
+        original_joint = [joint for joint in self.original_robot.joints if joint.name == 'non_aligned_link_joint_after'][0]
+        modified_joint = [joint for joint in self.modified_robot.joints if joint.name == 'non_aligned_link_joint_after'][0]
 
         self.assertEqual(matrix_to_xyz_rpy(modified_joint.origin)[0],
                          matrix_to_xyz_rpy(original_joint.origin)[0])
@@ -599,10 +752,10 @@ class JointModifierTests(unittest.TestCase):
 
     def test_relative_joint_change_z_from_0(self):
 
-        modifier = JointModifier.from_name('joint_to_ground', self.modified_robot, dimension=geometry.Side.Z)
+        modifier = JointModifier.from_name('joint_to_ground', self.modified_robot, axis=geometry.Side.Z)
 
         modification = Modification()
-        modification.add_dimension(2, absolute=False)
+        modification.add_position(2, absolute=False)
 
         modifier.modify(modification)
 
@@ -620,10 +773,10 @@ class JointModifierTests(unittest.TestCase):
 
     def test_absolute_joint_change_x(self):
 
-        modifier = JointModifier.from_name('non_aligned_link_joint_before', self.modified_robot, dimension=geometry.Side.X)
+        modifier = JointModifier.from_name('non_aligned_link_joint_before', self.modified_robot, axis=geometry.Side.X)
 
         modification = Modification()
-        modification.add_dimension(2, absolute=True)
+        modification.add_position(2, absolute=True)
 
         modifier.modify(modification)
 
@@ -641,10 +794,10 @@ class JointModifierTests(unittest.TestCase):
 
     def test_absolute_joint_change_y(self):
 
-        modifier = JointModifier.from_name('non_aligned_link_joint_before', self.modified_robot, dimension=geometry.Side.Y)
+        modifier = JointModifier.from_name('non_aligned_link_joint_before', self.modified_robot, axis=geometry.Side.Y)
 
         modification = Modification()
-        modification.add_dimension(2, absolute=True)
+        modification.add_position(2, absolute=True)
 
         modifier.modify(modification)
 
@@ -662,10 +815,10 @@ class JointModifierTests(unittest.TestCase):
 
     def test_absolute_joint_change_z(self):
 
-        modifier = JointModifier.from_name('non_aligned_link_joint_before', self.modified_robot, dimension=geometry.Side.Z)
+        modifier = JointModifier.from_name('non_aligned_link_joint_before', self.modified_robot, axis=geometry.Side.Z)
 
         modification = Modification()
-        modification.add_dimension(2, absolute=True)
+        modification.add_position(2, absolute=True)
 
         modifier.modify(modification)
 
@@ -686,12 +839,12 @@ class JointModifierTests(unittest.TestCase):
         modifier = JointModifier.from_name('aligned_link_joint_after', self.modified_robot)
 
         modification = Modification()
-        modification.add_dimension(2, absolute=True)
+        modification.add_position(2, absolute=True)
 
         with self.assertRaises(Exception) as context:
             modifier.modify(modification)
 
-        self.assertTrue('Dimension not specified for joint' in str(context.exception))
+        self.assertTrue('Axis not specified for joint' in str(context.exception))
 
 if __name__ == '__main__':
     unittest.main()
