@@ -92,6 +92,8 @@ class LinkModifier(modifier.Modifier):
                 raise Exception(f"Error getting length for link {self.element.name}'s volume: Box geometry with no axis")
         elif (geometry_type == geometry.Geometry.CYLINDER):
             return visual_data.length
+        elif (geometry_type == geometry.Geometry.SPHERE):
+            return visual_data.radius
         else:
             return None
 
@@ -165,7 +167,8 @@ class LinkModifier(modifier.Modifier):
             elif (self.axis == geometry.Side.Z):
                 origin[2] = value
             visual_object.origin = xyz_rpy_to_matrix(origin)
-            collision_object.origin = xyz_rpy_to_matrix(origin)
+            if (collision_object is not None):
+                collision_object.origin = xyz_rpy_to_matrix(origin)
             if (inertia is not None):
                 inertia.origin = xyz_rpy_to_matrix(origin)
         else:
