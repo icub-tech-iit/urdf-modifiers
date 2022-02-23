@@ -835,7 +835,7 @@ class JointModifierTests(unittest.TestCase):
         self.assertEqual(matrix_to_xyz_rpy(modified_joint.origin)[2],
                          2)
 
-    def test_add_dimension_fails_if_no_dimension(self):
+    def test_add_position_fails_if_no_dimension(self):
 
         modifier = JointModifier.from_name('aligned_link_joint_after', self.modified_robot)
 
