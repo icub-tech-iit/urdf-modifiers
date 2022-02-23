@@ -110,8 +110,7 @@ However, for **dimension** modifications it will also adjust the origin of both 
 This modifier will only work if the origin of parent joint, link and child joint are parallel with respect to the Z axis.
 
 ```python
-from urdfModifiers.core.linkModifier import LinkModifier
-from urdfModifiers.core.jointModifier import JointModifier
+from urdfModifiers.core.fixedOffsetModifier import FixedOffsetModifier
 from urdfModifiers.core.modification import Modification
 from urdfModifiers.utils import *
 from urdfModifiers.geometry import *
@@ -163,4 +162,14 @@ for config_section in config.sections():
 
 Here is an example of a valid `conf.ini` file:
 
+```ini
+[r_upper_arm]
+dimension = 0.65
+radius = 0.45
+density_scale = 1.5
 
+[r_lower_leg]
+position_scale = 2.0
+```
+
+The suffix `_scale` referes to relative modifications (so `absolute=False` when creating the modifier).
