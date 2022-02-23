@@ -75,9 +75,9 @@ robot, gazebo_plugin_text = utils.load_robot_and_gazebo_plugins(urdf_path,dummy_
 
 # Create a link modifier by specifying link name and robot
 # axis parameter is necessary for dimension and position modifications
-link_modifier = LinkModifier.from_name('r_upper_arm', robot, axis=geometry.Geometry.Side.Z)
+link_modifier = LinkModifier.from_name('r_upper_arm', robot, axis=geometry.Side.Z)
 # Same applies for JointModifier
-joint_modifier = JointModifier.from_name('r_elbow', robot, axis=geometry.Geometry.Side.X)
+joint_modifier = JointModifier.from_name('r_elbow', robot, axis=geometry.Side.X)
 
 # Create a new Modification instance
 link_modifications = Modification()
