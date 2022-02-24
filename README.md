@@ -103,7 +103,7 @@ utils.write_urdf_to_file(robot, output_file, gazebo_plugin_text)
 
 This modifier is meant to be connected to a link. It will perform the same modifications as a simple `LinkModifier`. 
 
-However, for **dimension** modifications it will also adjust the origin of both the link and its child joint (that is, the joint that comes immediately after this link in the URDF tree), so that the distance between the beginning of the link and its parent joint (**parent offset**), as well as the distance between the end of the link and its child joint (**child offset**) are preserved. You can see a diagram of this modification in the following image:
+However, for **dimension** modifications it will also adjust the origin of both the link and its child joint (that is, the joint that comes immediately after this link in the URDF tree), so that the distance between the beginning of the link visual shape and its parent joint axis (**parent offset**), as well as the distance between the end of the link visual shape and its child joint axis (**child offset**) are preserved. You can see a diagram of this modification in the following image:
 
 ![FixedOffset Explanation](https://user-images.githubusercontent.com/31577366/155292943-dda056cb-a72c-4168-b283-85475d1d5e43.png)
 

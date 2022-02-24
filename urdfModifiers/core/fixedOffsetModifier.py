@@ -76,11 +76,11 @@ class FixedOffsetModifier():
         return significant_length
 
     def get_joint_origin(self, joint):
-        """Returns the origin of a joint"""
+        """Returns the origin of a joint w.r.t. to the link frame"""
         return (matrix_to_xyz_rpy(joint.origin) if joint else None)
 
     def get_link_origin(self, link):
-        """Returns the origin of a joint"""
+        """Returns the origin of a first visual element w.r.t. to the link frame"""
         return matrix_to_xyz_rpy(link.visuals[0].origin)
 
     def calculate_offsets(self):
