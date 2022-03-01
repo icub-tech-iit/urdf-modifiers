@@ -5,4 +5,4 @@
 from . import modifier
 from . import linkModifier
 from . import jointModifier
-
+from . import fixedOffsetModifier
