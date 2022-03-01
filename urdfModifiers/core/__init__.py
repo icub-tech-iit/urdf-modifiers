@@ -6,4 +6,4 @@ from . import modifier
 from . import modification
 from . import linkModifier
 from . import jointModifier
-
+from . import fixedOffsetModifier
