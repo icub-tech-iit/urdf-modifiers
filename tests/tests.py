@@ -863,7 +863,7 @@ class FixedOffsetModifierTests(unittest.TestCase):
         parent_joint_offset, child_joint_offset = modifier.calculate_offsets()
 
         self.assertEqual(parent_joint_offset, 0.5)
-        self.assertEqual(child_joint_offset, -0.5)
+        self.assertEqual(float(child_joint_offset[list(child_joint_offset.keys())[0]]), -0.5)
 
     def test_relative_modifier_dimension_for_aligned_joint(self):
 
