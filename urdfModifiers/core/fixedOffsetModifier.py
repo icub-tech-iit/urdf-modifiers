@@ -88,8 +88,8 @@ class FixedOffsetModifier():
         parent_joint_list = [corresponding_joint for corresponding_joint in robot.joints if corresponding_joint.child == link.name]
         self.parent_joint = (parent_joint_list[0] if parent_joint_list else None)
         child_joint_list = [corresponding_joint for corresponding_joint in robot.joints if corresponding_joint.parent == link.name]
-        self.child_joint = (child_joint_list[0] if child_joint_list else None)
-        self.joint_modifier = JointModifier(self.child_joint, axis=Side.Z)
+        self.child_joint = (child_joint_list if child_joint_list else None)
+        self.joint_modifier = ({item:JointModifier(item, axis = Side.Z) for item in self.child_joint} if self.child_joint else None )
         self.check_if_z_parallel()
 
     @classmethod
@@ -124,14 +124,14 @@ class FixedOffsetModifier():
     def check_if_z_parallel(self):
         """Validates that all Z axis of link and connected joints are parallel, otherwise raises an exception"""
         modifier_is_valid = True
-
         if (self.parent_joint is not None):
             link_origin = matrix_to_xyz_rpy(self.link.visuals[0].origin)
             modifier_is_valid = modifier_is_valid and link_origin[3] == 0 and link_origin[4] == 0
 
         if (self.child_joint is not None):
-            child_joint_origin = matrix_to_xyz_rpy(self.child_joint.origin)
-            modifier_is_valid = modifier_is_valid and child_joint_origin[3] == 0 and child_joint_origin[4] == 0
+            for item in self.child_joint: 
+                child_joint_origin = matrix_to_xyz_rpy(item.origin)
+                modifier_is_valid = modifier_is_valid and child_joint_origin[3] == 0 and child_joint_origin[4] == 0
 
         if not modifier_is_valid:
             raise Exception("Cannot create FixedOffsetModifier for a setup that is not z-parallel")
@@ -156,15 +156,21 @@ class FixedOffsetModifier():
         link_length = self.get_significant_length()
         link_visual_origin = self.get_link_origin(self.link)
         link_visual_origin_z = link_visual_origin[2]
-        child_joint_origin = self.get_joint_origin(self.child_joint)
-        child_joint_origin_z = (child_joint_origin[2] if child_joint_origin is not None else 0)
+        child_joint_origin_z = ({} if self.child_joint else {None:0.0})
+        if (self.child_joint is not None):  
+            for item in self.child_joint:
+                child_joint_origin = self.get_joint_origin(item)
+                child_joint_origin_z.update({item:(child_joint_origin[2] if child_joint_origin is not None else 0)})
 
         # Using formula: s_o = v_o - v_l * sign(j_o) / 2
-        parent_joint_offset = (link_visual_origin_z - link_length * math.copysign(1, child_joint_origin_z) / 2 if self.parent_joint else None)
+        parent_joint_offset = (link_visual_origin_z - link_length * math.copysign(1, float(child_joint_origin_z[list(child_joint_origin_z.keys())[0]])) / 2 if self.parent_joint else None)
 
         # Using formula: e_o = v_o + v_l * sign(j_o) / 2 - j_o
-        child_joint_offset = (link_visual_origin_z + link_length * math.copysign(1, child_joint_origin_z) / 2 - child_joint_origin_z if self.child_joint else None)
-
+        child_joint_offset = ({} if self.child_joint else None)
+        if(self.child_joint is not None):
+            for item in self.child_joint:
+                child_joint_offset.update({item:(link_visual_origin_z + link_length * math.copysign(1, child_joint_origin_z[item]) / 2 - child_joint_origin_z[item] if self.child_joint else None)})
+                
         return parent_joint_offset, child_joint_offset
 
     def modify(self, modifications):
@@ -189,9 +195,12 @@ class FixedOffsetModifier():
 
     def change_dimension_and_keep_offsets(self, new_length):
         """Changes the dimension of the link while keeping the offset between it and both parent and child joints"""
+        child_joint_origin_z = ({} if self.child_joint else {None:0.0})
 
-        child_joint_origin = self.get_joint_origin(self.child_joint)
-        child_joint_origin_z = (child_joint_origin[2] if child_joint_origin is not None else 0)
+        if(self.child_joint is not None):
+            for item in self.child_joint: 
+                child_joint_origin = self.get_joint_origin(item)
+                child_joint_origin_z.update({item:child_joint_origin[2] if child_joint_origin is not None else 0})
 
         parent_joint_offset, child_joint_offset = self.calculate_offsets()
 
@@ -199,12 +208,12 @@ class FixedOffsetModifier():
 
         if parent_joint_offset is not None:
             # Using formula: v_o' = s_o + v_l' * sign(j_o) / 2 
-            new_link_origin = parent_joint_offset + new_length * math.copysign(1, child_joint_origin_z) / 2
+            new_link_origin = parent_joint_offset + new_length * math.copysign(1, child_joint_origin_z[list(child_joint_origin_z.keys())[0]]) / 2
             link_modification.add_position(new_link_origin, absolute=True)
         else:
             # for the joint calculations, if there is no parent we position it as if it were in the center of the visual
             # s_o = v_o - v_l * sign(j_o) / 2   with  v_o = 0
-            parent_joint_offset = -new_length * math.copysign(1, child_joint_origin_z) / 2
+            parent_joint_offset = -new_length * math.copysign(1, child_joint_origin_z[list(child_joint_origin_z.keys())[0]]) / 2
 
         geometry_type, _ = self.get_geometry(self.link_modifier.get_visual())
         if geometry_type == Geometry.SPHERE:        
@@ -215,10 +224,11 @@ class FixedOffsetModifier():
         self.link_modifier.modify(link_modification)
 
         if (self.child_joint is not None):
+            for item in self.joint_modifier:
             # j_o' = s_o + v_l' * sign(j_o) - e_o
-            new_child_joint_origin = new_length * math.copysign(1, child_joint_origin_z) + parent_joint_offset - child_joint_offset
-            joint_modification = Modification()
+                new_child_joint_origin = new_length * math.copysign(1, child_joint_origin_z[item]) + parent_joint_offset - child_joint_offset[item]
+                joint_modification = Modification()
 
-            joint_modification.add_position(new_child_joint_origin, absolute=True)
+                joint_modification.add_position(new_child_joint_origin, absolute=True)
 
-            self.joint_modifier.modify(joint_modification)
+                self.joint_modifier[item].modify(joint_modification)
