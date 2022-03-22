@@ -6,7 +6,7 @@ from urdfModifiers.core.jointModifier import JointModifier
 from urdfModifiers.core.fixedOffsetModifier import FixedOffsetModifier
 from urdfModifiers.geometry import *
 from urdfModifiers.utils import *
-from urdfpy import matrix_to_xyz_rpy 
+from urdfpy import Joint, matrix_to_xyz_rpy 
 import math
 
 """
@@ -1019,6 +1019,14 @@ class FixedOffsetModifierTests(unittest.TestCase):
         
         self.assertEqual(modified_parent_joint_offset,
                          None)
+
+    def test_joint_type(self):
+        modifier = JointModifier.from_name("aligned_link_joint_after", self.modified_robot) 
+        modification = Modification()
+        modification.add_joint_type('revolute')
+        modifier.modify(modification)
+        modified_joint = [joint for joint in self.modified_robot.joints if joint.name == 'aligned_link_joint_after'][0]
+        self.assertEqual(modified_joint.joint_type, 'revolute')
 
 if __name__ == '__main__':
     unittest.main()
