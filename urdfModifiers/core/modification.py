@@ -19,6 +19,7 @@ class Modification:
         self.dimension = None
         self.radius = None
         self.position = None
+        self.joint_type = None 
         pass
 
     @classmethod
@@ -61,6 +62,11 @@ class Modification:
         if position is not None:
             new_modification.add_position(float(position), True)
 
+        joint_type_modification = config_section.get('joint_type', None)
+        
+        if(joint_type_modification): 
+            new_modification.add_joint_type(str(joint_type_modification))
+
         return new_modification
 
     def add_density(self, value, absolute):
@@ -83,6 +89,9 @@ class Modification:
         """Adds a modification of the position of the origin"""
         self.position = ModificationType(value, absolute)
 
+    def add_joint_type(self, value):
+        self.joint_type = value
+
     def __str__(self):
         print_message = "Modification class with the following parameters: "
         if self.mass:
@@ -95,5 +104,6 @@ class Modification:
             print_message += f"{'Absolute' if self.radius.absolute else 'Relative'} modification of radius with value {self.radius.value}. "
         if self.position:
             print_message += f"{'Absolute' if self.position.absolute else 'Relative'} modification of origin position with value {self.position.value}."
-        
+        if self.joint_type: 
+            print_message += f"Joint Type "+ self.joint_type
         return print_message

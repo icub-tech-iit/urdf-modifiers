@@ -48,4 +48,7 @@ class JointModifier(modifier.Modifier):
                 elif (self.axis == Side.Z):
                     xyz_rpy[2] = original_z * modifications.position.value
             self.element.origin = xyz_rpy_to_matrix(xyz_rpy) 
+            
+        if modifications.joint_type: 
+            self.element.joint_type = modifications.joint_type
                 
