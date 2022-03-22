@@ -6,7 +6,7 @@ from urdfModifiers.core.jointModifier import JointModifier
 from urdfModifiers.core.fixedOffsetModifier import FixedOffsetModifier
 from urdfModifiers.geometry import *
 from urdfModifiers.utils import *
-from urdfpy import Joint, matrix_to_xyz_rpy 
+from urdfpy import matrix_to_xyz_rpy 
 import math
 
 """
