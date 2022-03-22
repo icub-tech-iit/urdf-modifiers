@@ -63,7 +63,7 @@ class Modification:
             new_modification.add_position(float(position), True)
 
         joint_type_modification = config_section.get('joint_type', None)
-        
+
         if(joint_type_modification): 
             new_modification.add_joint_type(str(joint_type_modification))
 
@@ -107,3 +107,4 @@ class Modification:
         if self.joint_type: 
             print_message += f"Joint Type "+ self.joint_type
         return print_message
+        
