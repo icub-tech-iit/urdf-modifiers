@@ -9,6 +9,7 @@ The possible modifications are related to :
 - **Dimension** (relative and absolute)
 - **Radius** (relative and absolute)
 - **Position** (relative and absolute)
+- **Joint type** (_revolute_, _prismatic_, _continuous_, _fixed_)
 
 An interface for reading the modifications from a configuration file is provided together with the library.
 
@@ -170,6 +171,9 @@ density_scale = 1.5
 
 [r_lower_leg]
 position_scale = 2.0
+
+[l_ankle_roll]
+joint_type = 'fixed'
 ```
 
 The suffix `_scale` referes to relative modifications (so `absolute=False` when creating the modifier).
