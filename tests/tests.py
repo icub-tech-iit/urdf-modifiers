@@ -23,7 +23,7 @@ class LinkModifierTests(unittest.TestCase):
 
     def __init__(self, *args, **kwargs):
         super(LinkModifierTests, self).__init__(*args, **kwargs)
-        self.original_filename = './test_model.urdf'
+        self.original_filename = 'tests/test_model.urdf'
         self.original_robot, _ = utils.load_robot_and_gazebo_plugins(self.original_filename, 'dummy.urdf')
 
     def setUp(self):
@@ -640,7 +640,7 @@ class LinkModifierTests(unittest.TestCase):
 class JointModifierTests(unittest.TestCase):
     def __init__(self, *args, **kwargs):
         super(JointModifierTests, self).__init__(*args, **kwargs)
-        self.original_filename = './test_model.urdf'
+        self.original_filename = 'tests/test_model.urdf'
         self.original_robot, _ = utils.load_robot_and_gazebo_plugins(self.original_filename, 'dummy.urdf')
 
     def setUp(self):
@@ -850,7 +850,7 @@ class JointModifierTests(unittest.TestCase):
 class FixedOffsetModifierTests(unittest.TestCase):
     def __init__(self, *args, **kwargs):
         super(FixedOffsetModifierTests, self).__init__(*args, **kwargs)
-        self.original_filename = './test_model.urdf'
+        self.original_filename = 'tests/test_model.urdf'
         self.original_robot, _ = utils.load_robot_and_gazebo_plugins(self.original_filename, 'dummy.urdf')
 
     def setUp(self):
