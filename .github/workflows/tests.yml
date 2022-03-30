@@ -3,7 +3,6 @@ name: urdf-modifier
 on:
   push:
   pull_request:
-  commit:
 
 jobs:
   build:
