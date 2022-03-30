@@ -96,6 +96,13 @@ joint_modifications.add_position(0.4, absolute=True)
 link_modifier.modify(link_modifications)
 joint_modifier.modify(joint_modifications)
 
+# Create a new Modification instance 
+joint_modification_joint_type = Modification()
+joint_modification_joint_type.add_joint_type(geometry.JointType.REVOLUTE)
+
+# Apply the modification 
+joint_modifier.modify(joint_modification_joint_type)
+
 # Write URDF to a new file, also adding back the previously removed <gazebo> tags                
 utils.write_urdf_to_file(robot, output_file, gazebo_plugin_text)  
 ```

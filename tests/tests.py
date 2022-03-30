@@ -1023,10 +1023,10 @@ class FixedOffsetModifierTests(unittest.TestCase):
     def test_joint_type(self):
         modifier = JointModifier.from_name("aligned_link_joint_after", self.modified_robot) 
         modification = Modification()
-        modification.add_joint_type('revolute')
+        modification.add_joint_type(geometry.JointType.REVOLUTE)
         modifier.modify(modification)
         modified_joint = [joint for joint in self.modified_robot.joints if joint.name == 'aligned_link_joint_after'][0]
-        self.assertEqual(modified_joint.joint_type, 'revolute')
+        self.assertEqual(modified_joint.joint_type, geometry.JointType.REVOLUTE)
 
 if __name__ == '__main__':
     unittest.main()
