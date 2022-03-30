@@ -21,6 +21,13 @@ class Side(Enum):
     Y = auto()
     Z = auto()
 
+class JointType():
+    """The different types of joint"""
+    PRISMATIC = 'prismatic'
+    REVOLUTE = 'revolute'
+    FIXED = 'fixed'
+    CONTINUOUS = 'continuous'
+
 class Limb(Enum, metaclass=ContainsBasedOnKeyMeta):
     """The possible limbs of the robot"""
     NONE = auto()
