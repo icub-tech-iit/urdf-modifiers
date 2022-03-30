@@ -1,4 +1,4 @@
-name: urdf-modifier
+name: urdf-modifiers
 
 on:
   push:
