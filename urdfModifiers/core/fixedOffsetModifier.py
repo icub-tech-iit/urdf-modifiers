@@ -162,8 +162,8 @@ class FixedOffsetModifier():
                 child_joint_origin = self.get_joint_origin(item)
                 child_joint_origin_z.update({item:(child_joint_origin[2] if child_joint_origin is not None else 0)})
 
-        # Using formula: s_o = v_o - v_l * sign(j_o) / 2
-        parent_joint_offset = (link_visual_origin_z - link_length * math.copysign(1, float(child_joint_origin_z[list(child_joint_origin_z.keys())[0]])) / 2 if self.parent_joint else None)
+        # Using formula: s_o = (v_o - v_l/2) * sign(v_o)
+        parent_joint_offset = (link_visual_origin_z - link_length/2)* math.copysign(1, link_visual_origin_z) if self.parent_joint else None 
 
         # Using formula: e_o = v_o + v_l * sign(j_o) / 2 - j_o
         child_joint_offset = ({} if self.child_joint else None)
@@ -206,14 +206,16 @@ class FixedOffsetModifier():
 
         link_modification = Modification()
 
+        link_visual_origin = self.get_link_origin(self.link)
+        link_visual_origin_z = link_visual_origin[2]
         if parent_joint_offset is not None:
-            # Using formula: v_o' = s_o + v_l' * sign(j_o) / 2 
-            new_link_origin = parent_joint_offset + new_length * math.copysign(1, child_joint_origin_z[list(child_joint_origin_z.keys())[0]]) / 2
+            # Using formula: v_o' = (s_o + v_l'/2) * sign(v_o) 
+            new_link_origin = (parent_joint_offset + new_length/2) * math.copysign(1,link_visual_origin_z)
             link_modification.add_position(new_link_origin, absolute=True)
         else:
             # for the joint calculations, if there is no parent we position it as if it were in the center of the visual
-            # s_o = v_o - v_l * sign(j_o) / 2   with  v_o = 0
-            parent_joint_offset = -new_length * math.copysign(1, child_joint_origin_z[list(child_joint_origin_z.keys())[0]]) / 2
+            # s_o = v_o - v_l * sign(v_o) / 2   with  v_o = 0
+            parent_joint_offset = -new_length * math.copysign(1,link_visual_origin_z) / 2
 
         geometry_type, _ = self.get_geometry(self.link_modifier.get_visual())
         if geometry_type == Geometry.SPHERE:        
