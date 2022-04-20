@@ -862,8 +862,10 @@ class FixedOffsetModifierTests(unittest.TestCase):
 
         parent_joint_offset, child_joint_offset = modifier.calculate_offsets()
 
-        self.assertEqual(parent_joint_offset, 0.5)
-        self.assertEqual(float(child_joint_offset[list(child_joint_offset.keys())[0]]), -0.5)
+        self.assertEqual(parent_joint_offset.joint.name, 'aligned_link_joint_before')
+        self.assertEqual(parent_joint_offset.z, 0.5)
+        self.assertEqual(child_joint_offset[0].joint.name, 'aligned_link_joint_after')
+        self.assertEqual(child_joint_offset[0].z, -0.5)
 
     def test_relative_modifier_dimension_for_aligned_joint(self):
 
@@ -933,11 +935,11 @@ class FixedOffsetModifierTests(unittest.TestCase):
         self.assertEqual(matrix_to_xyz_rpy(original_parent_joint.origin)[2],
                          matrix_to_xyz_rpy(modified_parent_joint.origin)[2])
 
-        self.assertEqual(modified_parent_joint_offset,
-                         parent_joint_offset)
+        self.assertEqual(modified_parent_joint_offset.z,
+                         parent_joint_offset.z)
 
-        self.assertEqual(modified_child_joint_offset,
-                         child_joint_offset)
+        self.assertEqual(modified_child_joint_offset[0].z,
+                         child_joint_offset[0].z)
 
     def test_fails_if_not_z_parallel(self):
 
@@ -977,14 +979,14 @@ class FixedOffsetModifierTests(unittest.TestCase):
         self.assertEqual(matrix_to_xyz_rpy(original_parent_joint.origin)[2],
                          matrix_to_xyz_rpy(modified_parent_joint.origin)[2])
 
-        self.assertEqual(modified_parent_joint_offset,
-                         parent_joint_offset)
+        self.assertEqual(modified_parent_joint_offset.z,
+                         parent_joint_offset.z)
 
-        self.assertEqual(child_joint_offset,
-                         None)
+        self.assertEqual(len(child_joint_offset),
+                         0)
         
-        self.assertEqual(modified_child_joint_offset,
-                         None)
+        self.assertEqual(len(modified_child_joint_offset),
+                         0)
 
     def test_works_with_no_parent_joint(self):
 
