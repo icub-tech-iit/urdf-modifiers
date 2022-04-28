@@ -226,13 +226,12 @@ class FixedOffsetModifier():
         if modifications.dimension:
             original_length = self.get_significant_length()
             if modifications.dimension.absolute:
-                self.change_dimension_and_keep_offsets(modifications.dimension.value)
+                self.change_dimension_and_keep_offsets(modifications.dimension.value, modifications.offset_mask)
             else:
-                self.change_dimension_and_keep_offsets(original_length * modifications.dimension.value)
+                self.change_dimension_and_keep_offsets(original_length * modifications.dimension.value, modifications.offset_mask)
 
-    def change_dimension_and_keep_offsets(self, new_length):
+    def change_dimension_and_keep_offsets(self, new_length, offset_mask):
         """Changes the dimension of the link while keeping the offset between it and both parent and child joints"""
-        link_length = self.get_significant_length()
         parent_joint_offset, child_joint_offset = self.calculate_offsets()
         unit_vector = self.get_direction_vector()
 
@@ -254,7 +253,7 @@ class FixedOffsetModifier():
 
             new_parent_origin_position = parent_joint_offset.to_vector() + new_length / 2 * np.dot(link_rotation_matrix, unit_vector)
             
-            self.modify_origin_three_dimensions(self.link_modifier, new_parent_origin_position)
+            self.modify_origin_three_dimensions(self.link_modifier, new_parent_origin_position, offset_mask)
         else:
             # for the joint calculations, if there is no parent we position it as if it were in the center of the visual
             # s_o = v_o - v_l * sign(j_o) / 2   with  v_o = 0
@@ -269,26 +268,28 @@ class FixedOffsetModifier():
                 new_child_origin_position = - item.to_vector() + link_translation_vector + new_length / 2 * np.dot(link_rotation_matrix, unit_vector)
         
                 corresponding_modifier = [joint_modifier for joint_modifier in self.joint_modifier_list if joint_modifier.element == item.joint][0]
-                self.modify_origin_three_dimensions(corresponding_modifier, new_child_origin_position)
+                self.modify_origin_three_dimensions(corresponding_modifier, new_child_origin_position, offset_mask)
 
-    def modify_origin_three_dimensions(self, modifier, new_position):
+    def modify_origin_three_dimensions(self, modifier, new_position, offset_mask=[1,1,1]):
         """Performs 3 position modifications to place the origin in a new X, Y and Z"""
         original_modifier_axis = modifier.axis
         modification = Modification()
 
-        modifier.axis = Side.X
-        
-        flattened_position_array = new_position.flatten()
+        flattened_position_array = new_position.flatten()  
 
-        modification.add_position(flattened_position_array[0], absolute=True)
-        modifier.modify(modification)
+        if offset_mask[0]:
+            modifier.axis = Side.X
+            modification.add_position(flattened_position_array[0], absolute=True)
+            modifier.modify(modification)
 
-        modifier.axis = Side.Y
-        modification.add_position(flattened_position_array[1], absolute=True)
-        modifier.modify(modification)
+        if offset_mask[1]:
+            modifier.axis = Side.Y
+            modification.add_position(flattened_position_array[1], absolute=True)
+            modifier.modify(modification)
 
-        modifier.axis = Side.Z
-        modification.add_position(flattened_position_array[2], absolute=True)
-        modifier.modify(modification)
+        if offset_mask[2]:
+            modifier.axis = Side.Z
+            modification.add_position(flattened_position_array[2], absolute=True)
+            modifier.modify(modification)
 
         modifier.axis = original_modifier_axis

@@ -992,6 +992,39 @@ class FixedOffsetModifierTests(unittest.TestCase):
             self.assertEqual(modified_child_joint_offset[index],
                             child_joint_offset[index])
 
+    def test_offset_mask_for_non_aligned_joint(self):
+
+        modifier = FixedOffsetModifier.from_name('non_aligned_link', self.modified_robot)
+
+        modification = Modification()
+        modification.add_dimension(3, offset_mask=[0,0,1], absolute=True)
+
+        parent_joint_offset, child_joint_offset = modifier.calculate_offsets()
+
+        modifier.modify(modification)
+
+        modified_parent_joint_offset, modified_child_joint_offset = modifier.calculate_offsets()
+
+        modified_link = [link for link in self.modified_robot.links if link.name == 'non_aligned_link'][0]
+
+        self.assertEqual(modified_link.visuals[0].geometry.box.size[2],
+                         3)
+
+        self.assertAlmostEqual(modified_parent_joint_offset.z,
+                         parent_joint_offset.z)
+        self.assertNotAlmostEqual(modified_parent_joint_offset.x,
+                         parent_joint_offset.x)
+        self.assertNotAlmostEqual(modified_parent_joint_offset.y,
+                         parent_joint_offset.y)
+
+        for index in range(len(child_joint_offset)):
+            self.assertAlmostEqual(modified_child_joint_offset[index].z,
+                            child_joint_offset[index].z)
+            self.assertNotAlmostEqual(modified_child_joint_offset[index].x,
+                            child_joint_offset[index].x)
+            self.assertNotAlmostEqual(modified_child_joint_offset[index].y,
+                            child_joint_offset[index].y)
+
     def test_works_with_no_child_joint(self):
 
         modifier = FixedOffsetModifier.from_name('connector_link_2', self.modified_robot)
