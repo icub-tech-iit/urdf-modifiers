@@ -265,10 +265,10 @@ class FixedOffsetModifier():
         link_rotation_matrix, link_translation_vector = self.split_transformation_matrix(link_origin_matrix)
         for item in child_joint_offset:
             # j_o' = s_o + v_l' * sign(j_o) - e_o
-                new_child_origin_position = - item.to_vector() + link_translation_vector + new_length / 2 * np.dot(link_rotation_matrix, unit_vector)
+            new_child_origin_position = - item.to_vector() + link_translation_vector + new_length / 2 * np.dot(link_rotation_matrix, unit_vector)
         
-                corresponding_modifier = [joint_modifier for joint_modifier in self.joint_modifier_list if joint_modifier.element == item.joint][0]
-                self.modify_origin_three_dimensions(corresponding_modifier, new_child_origin_position, offset_mask)
+            corresponding_modifier = [joint_modifier for joint_modifier in self.joint_modifier_list if joint_modifier.element == item.joint][0]
+            self.modify_origin_three_dimensions(corresponding_modifier, new_child_origin_position, offset_mask)
 
     def modify_origin_three_dimensions(self, modifier, new_position, offset_mask=[1,1,1]):
         """Performs 3 position modifications to place the origin in a new X, Y and Z"""
