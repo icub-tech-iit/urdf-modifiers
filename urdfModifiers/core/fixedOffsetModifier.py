@@ -166,14 +166,14 @@ class FixedOffsetModifier():
         return significant_length
 
     def get_joint_origin(self, joint, transform = True):
-        """Returns the origin of a joint w.r.t. to the link frame"""
+        """Returns the origin of a joint w.r.t. to the link's frame"""
         if not joint:
             return None
         
         return (matrix_to_xyz_rpy(joint.origin) if transform else joint.origin)
 
     def get_link_origin(self, link, transform = True):
-        """Returns the origin of a first visual element w.r.t. to the link frame"""
+        """Returns the origin of the first visual element w.r.t. to the link's frame"""
         link_origin = matrix_to_xyz_rpy(link.visuals[0].origin) if transform else link.visuals[0].origin
         return link_origin
 
