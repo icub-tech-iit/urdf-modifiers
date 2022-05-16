@@ -115,8 +115,6 @@ However, for **dimension** modifications it will also adjust the origin of both 
 
 ![FixedOffset Explanation](./assets/fomodifier.png)
 
-This modifier will only work if the origin of parent joint, link and child joint are parallel with respect to the Z axis.
-
 ```python
 from urdfModifiers.core.fixedOffsetModifier import FixedOffsetModifier
 from urdfModifiers.core.modification import Modification

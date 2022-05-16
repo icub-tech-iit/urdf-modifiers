@@ -20,6 +20,7 @@ class Modification:
         self.radius = None
         self.position = None
         self.joint_type = None 
+        self.offset_mask = [1,1,1]
         pass
 
     @classmethod
@@ -73,9 +74,18 @@ class Modification:
         """Adds a modification of the density"""
         self.density = ModificationType(value, absolute)
 
-    def add_dimension(self, value, absolute):
+    def add_dimension(self, value, absolute, offset_mask=None):
         """Adds a modification of the main dimension"""
         self.dimension = ModificationType(value, absolute)
+        if offset_mask is not None:
+            self.add_offset_mask(offset_mask)
+
+    def add_offset_mask(self, offset_mask):
+        """Changes the offset mask for choosing which offsets to keep.
+        Mask should be an array of 3 truthy/falsy values representing each axis"""
+        if not isinstance(offset_mask, list) or len(offset_mask) != 3:
+            raise Exception("Invalid Offset Mask parameter, expected array with 3 values")
+        self.offset_mask = offset_mask
 
     def add_mass(self, value, absolute):
         """Adds a modification of the mass"""
@@ -90,6 +100,7 @@ class Modification:
         self.position = ModificationType(value, absolute)
 
     def add_joint_type(self, value):
+        """Adds a modification of the type of joint (revolute, fixed, etc)"""
         self.joint_type = value
 
     def __str__(self):

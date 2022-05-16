@@ -3,7 +3,7 @@ from urdfpy import URDF
 from urdfModifiers.geometry import *
 import os
 
-def write_urdf_to_file(urdf, filename, gazebo_plugins):
+def write_urdf_to_file(urdf, filename, gazebo_plugins=[]):
     """Saves the URDF to a valid .urdf file, also adding the gazebo_plugins"""
     urdf.save(filename)
     lines = []
