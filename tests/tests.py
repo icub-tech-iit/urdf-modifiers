@@ -7,7 +7,7 @@ from urdfModifiers.core.fixedOffsetModifier import FixedOffsetModifier
 from urdfModifiers.geometry import *
 from urdfModifiers.geometry.geometry import Side
 from urdfModifiers.utils import *
-from urdfpy import matrix_to_xyz_rpy 
+from urchin import matrix_to_xyz_rpy 
 import math
 
 """

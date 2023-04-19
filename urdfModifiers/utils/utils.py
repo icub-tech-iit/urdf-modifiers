@@ -1,5 +1,5 @@
 from typing import Tuple
-from urdfpy import URDF
+from urchin import URDF
 from urdfModifiers.geometry import *
 import os
 

@@ -1,6 +1,6 @@
 from urdfModifiers.core import modifier
 from urdfModifiers.geometry.geometry import *
-from urdfpy import xyz_rpy_to_matrix, matrix_to_xyz_rpy 
+from urchin import xyz_rpy_to_matrix, matrix_to_xyz_rpy 
 
 class JointModifier(modifier.Modifier):
     """Class to modify joints in a URDF"""

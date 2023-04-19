@@ -1,5 +1,5 @@
 from dataclasses import dataclass
-from urdfpy import xyz_rpy_to_matrix, matrix_to_xyz_rpy
+from urchin import xyz_rpy_to_matrix, matrix_to_xyz_rpy
 from urdfModifiers.core import modifier
 import math
 import numpy as np
