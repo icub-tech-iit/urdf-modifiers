@@ -25,7 +25,7 @@ If you want to convert your model into basic shapes, you can use [`idyntree-mode
 
 Other requisites are:
 
-- [`urdfpy`](https://github.com/mmatl/urdfpy)
+- [`urchin`](https://github.com/fishbotics/urchin)
 - [`dataclasses`](https://pypi.org/project/dataclasses/)
 - [`unittest`](https://pypi.org/project/unittest/)
 
