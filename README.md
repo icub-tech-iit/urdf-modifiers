@@ -39,11 +39,11 @@ Install `python3`, if not installed (in **Ubuntu 20.04**):
 sudo apt install python3.8
 ```
 
-Clone the repo and install the library:
+ Install the library via pip:
 
 ```bash
 
-pip install "urdfModifiers @ git+https://github.com/icub-tech-iit/urdf-modifiers"
+pip install urdfModifiers 
 
 ```
 
