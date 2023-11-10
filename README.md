@@ -43,7 +43,7 @@ sudo apt install python3.8
 
 ```bash
 
-pip install urdfModifiers 
+pip install urdf-modifiers  
 
 ```
 
