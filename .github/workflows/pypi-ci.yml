@@ -41,24 +41,6 @@ jobs:
           name: dist
           path: dist
 
-  deploy_test_PyPI:
-    name: 📦 Deploy to TestPyPI
-    runs-on: ubuntu-24.04
-    needs: [build_wheels]
-    if: github.ref == 'refs/heads/main'
-    steps:
-      - name: Download artifacts
-        uses: actions/download-artifact@v4
-        with:
-          name: dist
-          path: dist
-
-      - name: Publish distribution 📦 to Test PyPI
-        uses: pypa/gh-action-pypi-publish@master
-        with:
-          password: ${{ secrets.TEST_PYPI_API_TOKEN }}
-          repository_url: https://test.pypi.org/legacy/
-
   deploy_PyPI:
     name: 📦 Deploy to PyPI
     runs-on: ubuntu-24.04
@@ -72,6 +54,6 @@ jobs:
           path: dist
 
       - name: Publish distribution 📦 to PyPI
-        uses: pypa/gh-action-pypi-publish@master
+        uses: pypa/gh-action-pypi-publish@v1
         with:
           password: ${{ secrets.PYPI_API_TOKEN }}
