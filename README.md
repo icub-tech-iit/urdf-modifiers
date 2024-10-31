@@ -53,7 +53,7 @@ pip install urdf-modifiers
 
 Create an environment with `urdf-modifiers`:
 
-~~~
+~~~console
 conda create -n urdfmodifiersenv urdf-modifiers
 conda activate urdfmodifiersenv
 ~~~
