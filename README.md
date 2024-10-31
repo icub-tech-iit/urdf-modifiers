@@ -33,27 +33,30 @@ They will be installed in the installation step!
 
 ## :floppy_disk: Installation
 
-Install `python3`, if not installed (in **Ubuntu 20.04**):
+### Installation on Ubuntu with `apt`
+
+Install `python` and required tools, if not installed:
 
 ```bash
-sudo apt install python3.8
+sudo apt install python3 python3-venv python3-pip
 ```
 
- Install the library via pip:
+ Install the library in a [virtual environment](https://docs.python.org/3/library/venv.html#venv-def), to avoid interfering with the global system:
 
 ```bash
-
-pip install urdf-modifiers  
-
-```
-
-preferably in a [virtual environment](https://docs.python.org/3/library/venv.html#venv-def). For example:
-
-```bash
-pip install virtualenv
 python3 -m venv your_virtual_env
 source your_virtual_env/bin/activate
+pip install urdf-modifiers  
 ```
+
+### Installation on Linux/macOS/Windows with `conda`
+
+Create an environment with `urdf-modifiers`:
+
+~~~console
+conda create -n urdfmodifiersenv urdf-modifiers
+conda activate urdfmodifiersenv
+~~~
 
 ## :rocket: Usage
 
